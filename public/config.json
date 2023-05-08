@@ -1,0 +1,14 @@
+{
+  "templates": [
+    {
+      "config": "templates/web/config.json",
+      "description": "测试模板",
+      "icon": "mdi:weather-sunny"
+    },
+    {
+      "config": "",
+      "description": "测试模板2",
+      "icon": "ep:ice-cream"
+    }
+  ]
+}

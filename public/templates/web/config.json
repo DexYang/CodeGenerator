@@ -1,0 +1,92 @@
+{
+  "fileStructure": "templates/web/fileStructure.ejs",
+  "templates": [
+    {
+      "name": "2-ddl_for_update.sql",
+      "from": "templates/web/mysql/2-ddl_for_update.sql",
+      "to": "/sql/mysql/"
+    }
+  ],
+  "variables": {
+    "packagePath": {
+      "label": "Java包路径",
+      "default": "com.cbit.caf2.modules."
+    },
+    "projectNamePrefix": {
+      "label": "工程名前缀",
+      "default": "project_"
+    },
+    "projectName": {
+      "label": "工程名"
+    },
+    "packageName": {
+      "label": "Java包名"
+    },
+    "componentName": {
+      "label": "Vue组件名"
+    }
+  },
+  "fields": [
+    {
+      "fieldName": "state",
+      "alias": "状态",
+      "type": "int2"
+    },
+    {
+      "fieldName": "delete_flag",
+      "alias": "逻辑删除标志",
+      "type": "int2"
+    },
+    {
+      "fieldName": "creator_id",
+      "alias": "创建者ID",
+      "type": "int8"
+    },
+    {
+      "fieldName": "insert_time",
+      "alias": "插入时间",
+      "type": "timestamp(6)"
+    },
+    {
+      "fieldName": "update_time",
+      "alias": "更新时间",
+      "type": "timestamp(6)"
+    },
+    {
+      "fieldName": "scope",
+      "alias": "数据权限标识",
+      "type": "varchar(255)"
+    }
+  ],
+  "fieldOptions": {
+    "fieldName": {
+      "label": "字段名",
+      "type": "input",
+      "require": true
+    },
+    "alias": {
+      "label": "备注名",
+      "type": "input",
+      "require": true
+    },
+    "type": {
+      "type": "select",
+      "label": "字段类型",
+      "options": ["varchar(255)", "int2", "int8", "timestamp(6)"],
+      "require": true
+    },
+    "unique": {
+      "label": "是否唯一",
+      "type": "bool"
+    },
+    "filter": {
+      "type": "select",
+      "label": "搜索条件",
+      "options": ["NO", "EQ", "LIKE", "START_WITH", "END_WITH", "EXCLUDE"]
+    },
+    "order": {
+      "label": "是否排序",
+      "type": "bool"
+    }
+  }
+}
