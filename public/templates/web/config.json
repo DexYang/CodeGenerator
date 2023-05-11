@@ -5,6 +5,11 @@
       "name": "2-ddl_for_update.sql",
       "from": "templates/web/mysql/2-ddl_for_update.sql",
       "to": "/sql/mysql/"
+    },
+    {
+      "name": "2-ddl_for_update.sql",
+      "from": "templates/web/postgresql/2-ddl_for_update.sql",
+      "to": "/sql/postgresql/"
     }
   ],
   "variables": {
@@ -17,13 +22,28 @@
       "default": "project_"
     },
     "projectName": {
-      "label": "工程名"
+      "label": "工程名",
+      "default": "Example"
     },
     "packageName": {
-      "label": "Java包名"
+      "label": "Java包名",
+      "default": "example"
     },
     "componentName": {
-      "label": "Vue组件名"
+      "label": "Vue组件名",
+      "default": "Example"
+    },
+    "dbName": {
+      "label": "数据库名",
+      "default": "caf2"
+    },
+    "tableName": {
+      "label": "表名",
+      "default": "t_example"
+    },
+    "tableNameAlias": {
+      "label": "表中文名",
+      "default": "样例表"
     }
   },
   "fields": [
@@ -70,8 +90,8 @@
       "require": true
     },
     "type": {
-      "type": "select",
       "label": "字段类型",
+      "type": "select",
       "options": ["varchar(255)", "int2", "int8", "timestamp(6)"],
       "require": true
     },

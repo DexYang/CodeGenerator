@@ -8,25 +8,23 @@ select now();
 start transaction;
 
 -- 以下填写变更SQL
-use `sysdb`;
+use `<%= variables.dbName %>`;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for t_example
+-- Table structure for <%= variables.tableName %>
 -- ----------------------------
-CREATE TABLE `t_example` (
-	`id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-	`string_field` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'string_field',
-	`state` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'state',
-	`delete_flag` tinyint(4) NOT NULL DEFAULT 0 COMMENT '逻辑删除标志',
-	`creator_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '创建者ID',
-	`insert_time` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '插入时间',
-	`update_time` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT '更新时间',
-	`scope` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '数据权限标识',
-	PRIMARY KEY (`id`) USING BTREE
-)ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'Example表' ROW_FORMAT = Dynamic;
+CREATE TABLE `<%= variables.tableName %>` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  <% fields.forEach(field => { %><% if (field.type === 'int2') { %>`<%= field.fieldName %>` tinyint(4) NOT NULL DEFAULT 0 COMMENT '<%= field.alias %>',
+  <% } else if (field.type === 'int8') { %>`<%= field.fieldName %>` bigint(20) NOT NULL DEFAULT 0 COMMENT '<%= field.alias %>',
+  <% } else if (field.type === 'varchar(255)') { %>`<%= field.fieldName %>` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '<%= field.alias %>',
+  <% } else if (field.type === 'timestamp(6)') { %>`<%= field.fieldName %>` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '<%= field.alias %>',
+  <% } %><% }) %>
+  PRIMARY KEY (`id`) USING BTREE
+)ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '<%= variables.tableNameAlias %>' ROW_FORMAT = Dynamic;
 
 
 SET FOREIGN_KEY_CHECKS = 1;

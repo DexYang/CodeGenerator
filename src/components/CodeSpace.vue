@@ -1,6 +1,6 @@
 <template>
     <div class="w-full bg-white p-2 dark:bg-gray-800 m-2 ml-1 rounded-2 text-left">
-        <div v-if="!state.templateSetVisible && !state.templateChooseVisible" h-full>
+        <div v-if="(!state.templateSetVisible && !state.templateChooseVisible) || state.templateSetReopen" h-full>
             <Codemirror
                 v-model="code"
                 placeholder="Code goes here..."
@@ -52,12 +52,12 @@ const parentNode = computed(() => {
 
 const code = computed({
     get: () => {
-        if (path.value.length > 0)
+        if (path.value.length > 0 && parentNode.value[path.value[path.value.length - 1]])
             return parentNode.value[path.value[path.value.length - 1]].toString()
         return ''
     },
     set: (val) => {
-        if (path.value.length > 0)
+        if (path.value.length > 0 && parentNode.value[path.value[path.value.length - 1]])
             parentNode.value[path.value[path.value.length - 1]] = val
     }
 })

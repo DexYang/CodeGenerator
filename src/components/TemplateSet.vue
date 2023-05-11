@@ -1,9 +1,9 @@
 <template>
     <n-modal
         v-model:show="state.templateSetVisible"
-        :mask-closable="state.templateSetVisibleReopen"
-        :close-on-esc="state.templateSetVisibleReopen"
-        :closable="state.templateSetVisibleReopen"
+        :mask-closable="state.templateSetReopen"
+        :close-on-esc="state.templateSetReopen"
+        :closable="state.templateSetReopen"
         :show-icon="false"
         :on-after-enter="onAfterEnter"
         class="w-80%!"
@@ -187,14 +187,17 @@ async function asyncGenerate() {
         validateRequiredFields()
         message.success('开始生成代码')
         loadingBar.start()
-        await state.loadFileStructure(config.value.fileStructure, variables.value)
+        state.variables = variables.value
         state.fields = fields.value
         state.templates = config.value.templates
+        await state.loadFileStructure(config.value.fileStructure)
         await state.generate()
         loadingBar.finish()
         state.templateSetVisible = false
     }
     catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(error)
         message.error('请填写必填内容')
     }
 }

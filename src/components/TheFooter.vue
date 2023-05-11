@@ -6,7 +6,7 @@
         <n-button text text-lg mr-3 @click="state.export()">
             <div i-carbon-download />
         </n-button>
-        <n-button text text-lg @click="state.templateSetVisible = true; state.templateSetVisibleReopen = true">
+        <n-button text text-lg @click="state.templateSetVisible = true; state.templateSetReopen = true">
             <div i-carbon-restart />
         </n-button>
     </div>
