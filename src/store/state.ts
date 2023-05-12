@@ -52,11 +52,12 @@ export const useState = defineStore('state', {
         async generate() {
             for (let i = 0; i < this.templates.length; i++) {
                 const item = this.templates[i]
+                // 模板内容渲染
                 const res = await get(item.from)
                 const data = await res.data.text()
                 const render = ejs.compile(data)
                 const renderData = render({ variables: this.variables, fields: this.fields })
-
+                // 目标路径渲染
                 const renderPath = ejs.compile(item.to.toString())
                 const path = renderPath({ variables: this.variables }).split('/')
                 let loc = this.fileStructure
@@ -64,9 +65,22 @@ export const useState = defineStore('state', {
                     if (path[j] !== '')
                         loc = loc[path[j]]
                 }
-                loc[item.name] = renderData
+                // 目标文件名渲染
+                const renderName = ejs.compile(item.name.toString())
+                const name = renderName({ variables: this.variables })
+                loc[name] = renderData
             }
             this.templateChooseVisible = false
+        },
+        setFields(fields: Array<Record<any, any>>, fieldOptions: Record<any, any>) {
+            for (const key in fieldOptions) {
+                const option = fieldOptions[key]
+                if (option.type === 'function') {
+                    // eslint-disable-next-line no-eval
+                    const func = eval(option.function)
+                    fields.map(item => func(item))
+                }
+            }
         },
         export() {
             const zip = new JSZip()

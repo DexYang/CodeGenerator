@@ -110,6 +110,8 @@ function createColumns(fieldOptions: Record<any, any>): DataTableColumns<Record<
         const item = fieldOptions[key]
         if (item.require)
             requiredFieldOptions.value.push(key)
+        if (item.type === 'function')
+            continue
         const temp = {
             title: item.label,
             resizable: true,
@@ -135,6 +137,7 @@ function createColumns(fieldOptions: Record<any, any>): DataTableColumns<Record<
                 else if (item.type === 'select') {
                     return h(NSelect, {
                         value: row[key],
+                        clearable: true,
                         status: (!item.require || fields.value[index][key]) ? 'success' : 'error',
                         options: item.options.map((i: string) => { return { label: i, value: i } }),
                         onUpdateValue(v) {
@@ -189,6 +192,7 @@ async function asyncGenerate() {
         loadingBar.start()
         state.variables = variables.value
         state.fields = fields.value
+        state.setFields(fields.value, config.value.fieldOptions)
         state.templates = config.value.templates
         await state.loadFileStructure(config.value.fileStructure)
         await state.generate()

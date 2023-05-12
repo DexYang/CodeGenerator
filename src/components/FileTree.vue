@@ -16,6 +16,7 @@
                         draggable
                         block-line
                         expand-on-click
+                        default-expand-all
                         :check-on-click="expandAll"
                         text-left
                         :data="data"
