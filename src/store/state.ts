@@ -3,7 +3,10 @@ import { promiseTimeout } from '@vueuse/core'
 import ejs from 'ejs'
 import FileSaver from 'file-saver'
 import JSZip from 'jszip'
+import { createDiscreteApi } from 'naive-ui'
 import { get } from '~/api/resource'
+
+const { loadingBar } = createDiscreteApi(['loadingBar'])
 
 interface State {
     templateChooseVisible: boolean
@@ -31,7 +34,7 @@ export const useState = defineStore('state', {
     }),
     actions: {
         async chooseTemplate(template: string): Promise<void> {
-            await promiseTimeout(600)
+            await promiseTimeout(400)
             this.templateChooseVisible = false
             this.templateSetVisible = true
             this.templateConfig = template
@@ -81,8 +84,10 @@ export const useState = defineStore('state', {
                     fields.map(item => func(item))
                 }
             }
+            this.fields = fields
         },
         export() {
+            loadingBar.start()
             const zip = new JSZip()
             function dfs(obj: any, path: string) {
                 for (const key in obj) {
@@ -102,7 +107,8 @@ export const useState = defineStore('state', {
             }
             dfs(this.fileStructure, '')
             zip.generateAsync({ type: 'blob' }).then((content) => {
-                FileSaver.saveAs(content, 'code.zip')
+                FileSaver.saveAs(content, 'Code.zip')
+                loadingBar.finish()
             })
         }
     }

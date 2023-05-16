@@ -2,13 +2,18 @@
   "templates": [
     {
       "config": "templates/web/config.json",
-      "description": "测试模板",
+      "description": "CAF2-Web: 基于RestService的CRUD模板",
       "icon": "mdi:weather-sunny"
     },
     {
-      "config": "",
-      "description": "测试模板2",
+      "config": "templates/core/config.json",
+      "description": "CAF2-Core: 基于MybatisPlus的简单模板",
       "icon": "ep:ice-cream"
+    },
+    {
+      "config": "templates/db/config.json",
+      "description": "用于生成DDL的简单模板",
+      "icon": "mdi:database"
     }
   ]
 }

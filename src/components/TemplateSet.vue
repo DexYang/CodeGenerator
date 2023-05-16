@@ -3,9 +3,10 @@
         v-model:show="state.templateSetVisible"
         :mask-closable="state.templateSetReopen"
         :close-on-esc="state.templateSetReopen"
-        :closable="state.templateSetReopen"
+        closable
         :show-icon="false"
         :on-after-enter="onAfterEnter"
+        :on-close="onClose"
         class="w-80%!"
         preset="card">
         <template #header>
@@ -28,6 +29,7 @@
                     :key="key"
                     :label="item.label" :path="key.toString()" :rule="{
                         required: true,
+                        validator: item.rule ? evalRule(item.rule) : undefined,
                         trigger: ['input', 'blur'],
                     }">
                     <NInput v-model:value="variables[key.toString()]" :placeholder="key.toString()" />
@@ -120,7 +122,7 @@ function createColumns(fieldOptions: Record<any, any>): DataTableColumns<Record<
                 if (item.type === 'input') {
                     return h(NInput, {
                         value: row[key],
-                        status: (!item.require || fields.value[index][key]) ? 'success' : 'error',
+                        status: ((item.require && !fields.value[index][key]) || (item.rule && fields.value[index][key] && !evalRule(item.rule)(fields.value[index][key]))) ? 'error' : 'success',
                         onUpdateValue(v: any) {
                             fields.value[index][key] = v
                         }
@@ -191,7 +193,6 @@ async function asyncGenerate() {
         message.success('开始生成代码')
         loadingBar.start()
         state.variables = variables.value
-        state.fields = fields.value
         state.setFields(fields.value, config.value.fieldOptions)
         state.templates = config.value.templates
         await state.loadFileStructure(config.value.fileStructure)
@@ -214,6 +215,22 @@ function validateRequiredFields() {
             if (!item[op])
                 throw new Error('nothing to say')
         }
+    }
+}
+
+function evalRule(value: string) {
+    // eslint-disable-next-line no-eval
+    return eval(value)
+}
+
+function onClose() {
+    if (!state.templateSetReopen) {
+        state.templateChooseVisible = true
+        state.templateSetVisible = false
+        variables.value = {}
+        fields.value = []
+        columns.value = []
+        requiredFieldOptions.value = []
     }
 }
 </script>
