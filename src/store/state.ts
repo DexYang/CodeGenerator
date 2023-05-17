@@ -78,7 +78,7 @@ export const useState = defineStore('state', {
             this.templateChooseVisible = false
         },
         async get(path: string) {
-            const res = await get(`${this.templateSource}${path}`)
+            const res = await get(`${this.templateSource !== '' ? `${this.templateSource}/` : ''}${path}`)
             return res
         },
         setFields(fields: Array<Record<any, any>>, fieldOptions: Record<any, any>) {
