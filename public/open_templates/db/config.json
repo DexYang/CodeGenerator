@@ -1,0 +1,85 @@
+{
+  "fileStructure": {
+    "sql": {
+      "mysql": {},
+      "postgresql": {}
+    }
+  },
+  "templates": [
+    {
+      "name": "2-ddl_for_update.sql",
+      "from": "open_templates/db/mysql/2-ddl_for_update.sql",
+      "to": "/sql/mysql/"
+    },
+    {
+      "name": "2-ddl_for_update.sql",
+      "from": "open_templates/db/postgresql/2-ddl_for_update.sql",
+      "to": "/sql/postgresql/"
+    }
+  ],
+  "variables": {
+    "dbName": {
+      "label": "数据库名"
+    },
+    "tableName": {
+      "label": "表名"
+    },
+    "tableNameAlias": {
+      "label": "表中文名"
+    }
+  },
+  "fields": [
+    {
+      "fieldName": "state",
+      "alias": "状态",
+      "type": "Integer"
+    },
+    {
+      "fieldName": "deleteFlag",
+      "alias": "逻辑删除标志",
+      "type": "Integer"
+    },
+    {
+      "fieldName": "creatorId",
+      "alias": "创建者ID",
+      "type": "Long"
+    },
+    {
+      "fieldName": "insertTime",
+      "alias": "插入时间",
+      "type": "LocalDateTime"
+    },
+    {
+      "fieldName": "updateTime",
+      "alias": "更新时间",
+      "type": "LocalDateTime"
+    },
+    {
+      "fieldName": "scope",
+      "alias": "数据权限标识",
+      "type": "String"
+    }
+  ],
+  "fieldOptions": {
+    "fieldName": {
+      "label": "字段名",
+      "type": "input",
+      "require": true
+    },
+    "alias": {
+      "label": "备注名",
+      "type": "input",
+      "require": true
+    },
+    "type": {
+      "label": "字段类型",
+      "type": "select",
+      "options": ["String", "Integer", "Long", "Double", "LocalDateTime"],
+      "require": true
+    },
+    "__": {
+      "type": "function",
+      "function": "(item) => {item.__hump = item.fieldName.replace(/\\_(\\w)/g, function(all, letter){ return letter.toUpperCase()});item.__line = item.fieldName.replace(/([A-Z])/g,'_$1').toLowerCase()}"
+    }
+  }
+}

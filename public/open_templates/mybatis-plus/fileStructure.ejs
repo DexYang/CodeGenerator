@@ -1,0 +1,23 @@
+{
+  "sql": {
+    "mysql": {},
+    "postgresql": {}
+  },
+  "java": {
+    <% variables.packageName.split(".").forEach(item => { %>
+        "<%= item %>": {
+    <% }) %>
+        "controller": {},
+        "Dao": {},
+        "DO": {},
+        "service": {
+          "impl": {
+
+          }
+        },
+        "VO": {}
+    <% variables.packageName.split(".").forEach(item => { %>
+      }
+    <% }) %>
+  }
+}
