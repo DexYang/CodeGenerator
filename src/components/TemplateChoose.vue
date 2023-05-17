@@ -73,7 +73,7 @@ const templates: Ref<Array<Record<any, any>>> = ref([])
 const noRepeat = {}
 
 function loadConfig(source: string) {
-    state.get(`${source}config.json`).then((res) => {
+    state.get(`${source}/config.json`).then((res) => {
         res.data.text().then((data: string) => {
             const config = JSON.parse(data)
             config.templates.forEach((item) => {
