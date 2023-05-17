@@ -64,7 +64,6 @@ import { Add, Code } from '@vicons/ionicons5'
 import type { DataTableColumns, FormInst } from 'naive-ui'
 import { NButton, NInput, NSelect, NSwitch, useLoadingBar, useMessage } from 'naive-ui'
 import { useState } from '~/store/state'
-import { get } from '~/api/resource'
 
 const state = useState()
 const config: Ref<Record<any, any>> = ref({})
@@ -79,7 +78,7 @@ const message = useMessage()
 const loadingBar = useLoadingBar()
 
 function onAfterEnter() {
-    get(state.templateConfig).then((res) => {
+    state.get(state.templateConfig).then((res) => {
         res.data.text().then((data: string) => {
             config.value = JSON.parse(data)
             if (Object.keys(state.variables).length === 0) {

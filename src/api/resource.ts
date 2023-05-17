@@ -1,11 +1,9 @@
 import type { AxiosPromise } from 'axios'
 import request from './request'
 
-const base = ''
-
-export function get(file: string): AxiosPromise {
+export function get(path: string): AxiosPromise {
     return request({
-        url: `${base}/${file}`,
+        url: `${path}`,
         method: 'get',
         responseType: 'blob'
     })

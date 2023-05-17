@@ -9,6 +9,7 @@ import { get } from '~/api/resource'
 const { loadingBar } = createDiscreteApi(['loadingBar'])
 
 interface State {
+    templateSource: string
     templateChooseVisible: boolean
     templateSetVisible: boolean
     templateSetReopen: boolean
@@ -22,6 +23,7 @@ interface State {
 
 export const useState = defineStore('state', {
     state: (): State => ({
+        templateSource: '',
         templateChooseVisible: true,
         templateSetVisible: false,
         templateSetReopen: false,
@@ -42,7 +44,7 @@ export const useState = defineStore('state', {
         async loadFileStructure(pathOrObj: string | object) {
             let data
             if (typeof pathOrObj === 'string') {
-                const res = await get(pathOrObj)
+                const res = await this.get(pathOrObj)
                 data = await res.data.text()
             }
             else {
@@ -56,7 +58,7 @@ export const useState = defineStore('state', {
             for (let i = 0; i < this.templates.length; i++) {
                 const item = this.templates[i]
                 // 模板内容渲染
-                const res = await get(item.from)
+                const res = await this.get(item.from)
                 const data = await res.data.text()
                 const render = ejs.compile(data)
                 const renderData = render({ variables: this.variables, fields: this.fields })
@@ -74,6 +76,10 @@ export const useState = defineStore('state', {
                 loc[name] = renderData
             }
             this.templateChooseVisible = false
+        },
+        async get(path: string) {
+            const res = await get(`${this.templateSource}${path}`)
+            return res
         },
         setFields(fields: Array<Record<any, any>>, fieldOptions: Record<any, any>) {
             for (const key in fieldOptions) {
