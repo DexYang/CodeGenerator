@@ -4,11 +4,6 @@
       "config": "open_templates/db/config.json",
       "description": "DDL的简单模板",
       "icon": "mdi:database"
-    },
-    {
-      "config": "open_templates/mybatis-plus/config.json",
-      "description": "基于MybatisPlus的简单模板",
-      "icon": "ep:ice-cream"
     }
   ]
 }
