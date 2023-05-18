@@ -8,6 +8,16 @@ import { get } from '~/api/resource'
 
 const { loadingBar } = createDiscreteApi(['loadingBar'])
 
+interface FileStructure {
+    [key: string]: FileStructure | string
+}
+
+interface Templates {
+    name: string
+    from: string
+    to: string
+}
+
 interface State {
     templateSource: string
     templateChooseVisible: boolean
@@ -15,10 +25,10 @@ interface State {
     templateSetReopen: boolean
     templateConfig: string
     templateSelected: string | undefined
-    fileStructure: Record<any, any>
-    variables: Record<any, any>
-    fields: Array<Record<any, any>>
-    templates: Array<Record<any, any>>
+    fileStructure: FileStructure
+    variables: Record<string, any>
+    fields: Array<Record<string, any>>
+    templates: Array<Templates>
 }
 
 export const useState = defineStore('state', {
@@ -68,7 +78,7 @@ export const useState = defineStore('state', {
                 let loc = this.fileStructure
                 for (let j = 0; j < path.length; j++) {
                     if (path[j] !== '')
-                        loc = loc[path[j]]
+                        loc = loc[path[j]] as FileStructure
                 }
                 // 目标文件名渲染
                 const renderName = ejs.compile(item.name.toString())

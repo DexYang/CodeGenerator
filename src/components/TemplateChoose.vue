@@ -30,8 +30,8 @@
             </template>
             <template #default>
                 <n-button
-                    v-for="item in templates"
-                    :key="item"
+                    v-for="(item, index) in templates"
+                    :key="index"
                     w-full
                     h-50px
                     mb-5
@@ -70,13 +70,13 @@ const message = useMessage()
 const loadingBar = useLoadingBar()
 
 const templates: Ref<Array<Record<any, any>>> = ref([])
-const noRepeat = {}
+const noRepeat: { [key: string]: boolean } = {}
 
 function loadConfig(source: string) {
     state.get(`${source}/config.json`).then((res) => {
         res.data.text().then((data: string) => {
             const config = JSON.parse(data)
-            config.templates.forEach((item) => {
+            config.templates.forEach((item: any) => {
                 item.source = source
                 if ((item.source + item.config) in noRepeat)
                     return
@@ -92,7 +92,7 @@ async function onClick(item: Record<any, any>) {
     await state.chooseTemplate(item.config)
 }
 
-const extLink = ref('')
+const extLink: Ref<any> = ref('')
 const extShow = ref(false)
 async function configExtLink() {
     loadingBar.start()

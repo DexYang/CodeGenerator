@@ -155,6 +155,10 @@ function deleteFile() {
     react()
 }
 
+interface FileStructure {
+    [key: string]: FileStructure | string
+}
+
 function locate(treeKey: string): { parent: Record<any, any>; key: string } {
     const path = treeKey.split('/').filter(item => item !== '')
     let loc = state.fileStructure
@@ -163,7 +167,7 @@ function locate(treeKey: string): { parent: Record<any, any>; key: string } {
     for (let j = 0; j < path.length; j++) {
         parent = loc
         key = path[j]
-        loc = loc[path[j]]
+        loc = loc[path[j]] as FileStructure
     }
     return { parent, key }
 }

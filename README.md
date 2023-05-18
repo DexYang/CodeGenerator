@@ -1,88 +1,244 @@
-<p align='center'>
-  <img src='https://user-images.githubusercontent.com/11247099/111864893-a457fd00-899e-11eb-9f05-f4b88987541d.png' alt='Vitesse - Opinionated Vite Starter Template' width='600'/>
-</p>
+<h2 align='center'>
+Template-based Code Generator By Pure Frontend
+</h2>
+<h3 align='center'>
+基于模板的纯前端实现的代码生成器
+</h3>
 
 <h6 align='center'>
-<a href="https://vitesse-lite.netlify.app/">Live Demo</a>
+<a href="https://dexy-code-generator.netlify.app/">Live Demo</a>
 </h6>
 
 <h5 align='center'>
-<b>Lightweight version of <a href="https://github.com/antfu/vitesse">Vitesse</a></b>
+<b>Started from <a href="https://github.com/antfu/vitesse-lite">Vitesse-lite</a></b>
 </h5>
 
 <br>
 
-<p align='center'>
-<b>English</b> | <a href="https://github.com/antfu/vitesse-lite/blob/main/README.zh-CN.md">简体中文</a>
-<!-- Contributors: Thanks for geting interested, however we DON'T accept new transitions to the README, thanks. -->
-</p>
-
-## Features
-
-- ⚡️ [Vue 3](https://github.com/vuejs/core), [Vite 3](https://github.com/vitejs/vite), [pnpm](https://pnpm.io/), [ESBuild](https://github.com/evanw/esbuild) - born with fastness
-
-- 🗂 [File based routing](./src/pages)
-
-- 📦 [Components auto importing](./src/components)
-
-- 🎨 [UnoCSS](https://github.com/antfu/unocss) - The instant on-demand atomic CSS engine.
-
-- 😃 Use icons from any icon sets in [Pure CSS](https://github.com/antfu/unocss/tree/main/packages/preset-icons)
-
-- 🔥 Use the [new `<script setup>` style](https://github.com/vuejs/rfcs/pull/227)
-
-- ✅ Use [Vitest](http://vitest.dev/) for unit and components testing
-
-- 🦾 TypeScript, of course
-
-- ☁️ Deploy on Netlify, zero-config
-
+<!-- <p align='center'> -->
+<!-- <b>English</b> | <a href="https://github.com/antfu/vitesse-lite/blob/main/README.zh-CN.md">简体中文</a> -->
+<!-- </p> -->
 
 <br>
 
-See [Vitesse](https://github.com/antfu/vitesse) for full featureset.
+## Features
+
+- ☁️ 纯前端实现，无后端, Deploy on Netlify with zero-netlify-config
+
+- ☁️ 可以引入外部模板配置，并分享给他人
+
+- ⚡️ [Vue 3](https://github.com/vuejs/core), [Vite 3](https://github.com/vitejs/vite), [pnpm](https://pnpm.io/), [ESBuild](https://github.com/evanw/esbuild), [UnoCSS](https://github.com/antfu/unocss) - inherit from vitesse-lite
+
+- 🗂 [EJS Template Engine](https://ejs.co/), [NaiveUI](https://www.naiveui.com/), [Axios](), [Pinia](), [CodeMirror](), [JsZip](), [FileSaver]()
+
+- 🦾 TypeScript, of course
+
+<br>
 
 
-## Dropped Features from [Vitesse](https://github.com/antfu/vitesse)
+## Template Config
 
-- ~~i18n~~
-- ~~Layouts~~
-- ~~SSG~~
-- ~~PWA~~
-- ~~Markdown~~
+<br>
 
-## Pre-packed
+<p>
+除了ejs模板之外，共有两个json格式的配置文件
+ </p>
 
-### UI Frameworks
+<br>
 
-- [UnoCSS](https://github.com/antfu/unocss) - The instant on-demand atomic CSS engine.
+### 1 - 根目录下的config.json
+```
+{
+  "templates": [
+    {
+      "config": "open_templates/db/config.json",
+      "description": "DDL的简单模板",
+      "icon": "mdi:database"
+    }
+  ]
+}
+```
 
-### Icons
+该配置文件用于声明这一份配置共包含几套模板
 
-- [Iconify](https://iconify.design) - use icons from any icon sets [🔍Icônes](https://icones.netlify.app/)
-- [Pure CSS Icons via UnoCSS](https://github.com/antfu/unocss/tree/main/packages/preset-icons)
+所有模板都要声明在`templates`数组中
 
-### Plugins
+每项需要声明该模板的配置文件路径`config`、模板描述`description`和图标`icon`（[图标来源](https://iconify.design/)）
+```
+interface Config {
+    templates: {
+        config: string
+        description: string
+        icon: string
+    }
+}
+```
 
-- [Vue Router](https://github.com/vuejs/vue-router)
-  - [`vite-plugin-pages`](https://github.com/hannoeru/vite-plugin-pages) - file system based routing
-- [`unplugin-auto-import`](https://github.com/antfu/unplugin-auto-import) - Directly use Vue Composition API and others without importing
-- [`unplugin-vue-components`](https://github.com/antfu/unplugin-vue-components) - components auto import
-- [`unplugin-vue-macros`](https://github.com/sxzz/unplugin-vue-macros) - Explore and extend more macros and syntax sugar to Vue.
-- [VueUse](https://github.com/antfu/vueuse) - collection of useful composition APIs
+该配置文件必须放在资源的根目录，且必须命名为`config.json`
 
-## Try it now!
+<br>
 
-### GitHub Template
+### 2- 模板的json配置文件
 
-[Create a repo from this template on GitHub](https://github.com/antfu/vitesse-lite/generate).
+例子
+```
+{
+  "fileStructure": {
+    "sql": {
+      "mysql": {},
+      "postgresql": {}
+    }
+  },
+  "templates": [
+    {
+      "name": "ddl.sql",
+      "from": "open_templates/db/mysql/ddl.sql",
+      "to": "/sql/mysql/"
+    },
+    {
+      "name": "ddl.sql",
+      "from": "open_templates/db/postgresql/ddl.sql",
+      "to": "/sql/postgresql/"
+    }
+  ],
+  "variables": {
+    "dbName": {
+      "label": "数据库名"
+    },
+    "tableName": {
+      "label": "表名"
+    },
+    "tableNameAlias": {
+      "label": "表中文名"
+    }
+  },
+  "fields": [
+    {
+      "fieldName": "deleteFlag",
+      "alias": "逻辑删除标志",
+      "type": "Integer"
+    },
+    {
+      "fieldName": "creatorId",
+      "alias": "创建者ID",
+      "type": "Long"
+    },
+    {
+      "fieldName": "insertTime",
+      "alias": "插入时间",
+      "type": "LocalDateTime"
+    },
+    {
+      "fieldName": "updateTime",
+      "alias": "更新时间",
+      "type": "LocalDateTime"
+    }
+  ],
+  "fieldOptions": {
+    "fieldName": {
+      "label": "字段名",
+      "type": "input",
+      "require": true
+    },
+    "alias": {
+      "label": "备注名",
+      "type": "input",
+      "require": true
+    },
+    "type": {
+      "label": "字段类型",
+      "type": "select",
+      "options": ["String", "Integer", "Long", "Double", "LocalDateTime"],
+      "require": true
+    },
+    "__": {
+      "type": "function",
+      "function": "(item) => {item.__hump = item.fieldName.replace(/\\_(\\w)/g, function(all, letter){ return letter.toUpperCase()});item.__line = item.fieldName.replace(/([A-Z])/g,'_$1').toLowerCase()}"
+    }
+  }
+}
+```
 
-### Clone to local
+- `fileStructure`用于声明文件目录结构，类型可以为`FileStructure`或者`filePath: string`
+  - 当值为文件路径时，该文件会被当做模板来渲染，因此你可以在文件中使用ejs语法，该文件最终也会当做`FileStructure`
+  - 文件目录结构用嵌套的`FileStructure`来声明，`key`为文件名，`value`为子目录
 
-If you prefer to do it manually with the cleaner git history
+```
+interface FileStructure {
+    [key: string]: FileStructure
+}
+```
 
-```bash
-npx degit antfu/vitesse-lite my-vitesse-app
-cd my-vitesse-app
-pnpm i # If you don't have pnpm installed, run: npm install -g pnpm
+- `templates` 用于声明模板，类型为`Templates`
+  - `name` 该模板最终形成的文件名，该值会被ejs渲染，可以使用ejs语法
+  - `from` 该模板原路径
+  - `to` 该模板放置的路径，该值会被ejs渲染，可以使用ejs语法
+
+```
+interface Templates {
+    name: string
+    from: string
+    to: string
+}
+```
+
+- `variables` 用于定义模板变量，类型为`Variables`
+  - `key` 为模板变量名
+  - `label` 为模板变量的显示名称
+  - `default` 变量默认值(可选)
+  - `rule` 用于校验变量输入值, 该值为js lambda函数(底层使用eval, 不能使用类型)，参数为 (rule: FormItemRule, value: string), 返回true即校验通过，校验不通过需要return new Error("提示语")
+
+```
+interface Variables {
+    [key: string]: {
+        label: string
+        default: string
+        rule: string
+    }
+}
+```
+
+- `fields` 用于定义预置的默认字段，类型为`Array<Record<string, string>`
+  - 数组中的每项的每个字段都来源于`fieldOptions`
+
+- `fieldOptions` 用于定义字段的配置项，类型为`Record<>`
+  - `key` 字段配置项名称
+  - `label` 字段配置项名称的显示名称
+  - `type` 字段配置项类型，可选类型为'input' | 'bool' | 'select' | 'function'
+  - `require` 该字段是否必填
+  - `option` 当`type`为'select'时来配置可选项
+  - `function` 当`type`为'function'生效, 该值为js lambda函数(底层使用eval, 不能使用类型), 参数为field: any,  即一个模板字段
+  - `rule` 当`type`为'input'生效, 该值为js lambda函数(底层使用eval, 不能使用类型), 参数为field: string, 即input输入值,  返回true即校验通过，校验不通过返回false
+```
+interface FieldOptions {
+    [key: string]: {
+      label: string
+      type: 'input' | 'bool' | 'select' | 'function'
+      options?: Array<string>
+      require?: boolean
+      function?: string
+      rule?: string
+    }
+}
+```
+<br>
+
+## Template Develop
+
+模板使用 [EJS Template Engine](https://ejs.co/)渲染，在渲染时会传入两个变量：
+
+`variables`和`fields`
+
+在编写模板时，如使用变量时，可像这样：
+
+```
+<%= variables.变量名 %>
+```
+
+如使用字段时，可像这样：
+
+```
+<% fields.forEach(field => { -%>
+    <%= field.字段属性 %>
+<% }) %>}
 ```

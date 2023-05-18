@@ -32,6 +32,10 @@ import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { useState } from '~/store/state'
 
+interface FileStructure {
+    [key: string]: FileStructure | string
+}
+
 const state = useState()
 
 const path = computed(() => {
@@ -46,7 +50,7 @@ const parentNode = computed(() => {
     let item = state.fileStructure
     const _path = path.value.slice(0, path.value.length - 1)
     for (const p in _path)
-        item = item[_path[p]]
+        item = item[_path[p]] as FileStructure
     return item
 })
 
