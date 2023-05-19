@@ -35,6 +35,32 @@ Template-based Code Generator By Pure Frontend
 
 <br>
 
+## Share
+
+<br>
+
+除了可以读取自身的public目录下的模板配置外，还可以引入外部模板配置。
+
+引入外部配置的两种方式是：
+
+1 - 在模板选择时点击右上角的Netlify按钮，输入外部配置源
+
+2 - 添加url参数：url=外部配置源
+
+例如：https://dexy-code-generator.netlify.app/?url=https://dexy-mp-template.netlify.app
+
+这使得你仅需在类似Netlify的服务上搭建一个自己的配置源，然后使用我的[Demo地址](https://dexy-code-generator.netlify.app/)添加上url参数就可以使用，并分享给你的团队！
+
+外部静态配置可以参考[这里](https://github.com/DexYang/Code-Generator-Static-Templates), 可以在Netlify上一键部署，唯一一个特殊的配置即允许跨域调用
+
+```
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"
+```
+
 
 ## Template Config
 
