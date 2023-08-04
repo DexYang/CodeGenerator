@@ -4,9 +4,13 @@ import ejs from 'ejs'
 import FileSaver from 'file-saver'
 import JSZip from 'jszip'
 import { createDiscreteApi } from 'naive-ui'
+import SHA256 from 'crypto-js/sha256'
+import MD5 from 'crypto-js/md5'
 import { get } from '~/api/resource'
 
 const { loadingBar } = createDiscreteApi(['loadingBar'])
+const sha256 = SHA256
+const md5 = MD5
 
 interface FileStructure {
     [key: string]: FileStructure | string

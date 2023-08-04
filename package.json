@@ -25,7 +25,9 @@
     "vue-codemirror": "^6.1.1",
     "@codemirror/lang-java": "^6.0.1",
     "@codemirror/lang-javascript": "^6.1.4",
-    "@codemirror/theme-one-dark": "^6.1.1"
+    "@codemirror/theme-one-dark": "^6.1.1",
+    "@types/crypto-js": "^4.1.1",
+    "crypto-js": "^4.1.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.38.4",
@@ -38,7 +40,6 @@
     "@vue/test-utils": "^2.3.2",
     "eslint": "^8.38.0",
     "jsdom": "^21.1.1",
-    "lint-staged": "^13.2.1",
     "pnpm": "^8.2.0",
     "simple-git-hooks": "^2.8.1",
     "taze": "^0.9.1",
@@ -55,12 +56,6 @@
     "@types/file-saver": "^2.0.5",
     "@types/ejs": "^3.1.2",
     "@iconify/vue": "^4.1.1"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
-  },
-  "lint-staged": {
-    "*": "eslint --fix"
   },
   "eslintConfig": {
     "extends": [

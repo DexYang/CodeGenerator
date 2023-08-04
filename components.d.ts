@@ -10,11 +10,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     CodeSpace: typeof import('./src/components/CodeSpace.vue')['default']
-    ExternLink: typeof import('./src/components/ExternLink.vue')['default']
     FileTree: typeof import('./src/components/FileTree.vue')['default']
-    NAffix: typeof import('naive-ui')['NAffix']
-    NAvatar: typeof import('naive-ui')['NAvatar']
-    NBadge: typeof import('naive-ui')['NBadge']
     NButton: typeof import('naive-ui')['NButton']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     NDataTable: typeof import('naive-ui')['NDataTable']

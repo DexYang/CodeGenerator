@@ -16,7 +16,7 @@
         </template>
         <template #default>
             <n-divider title-placement="left">
-                模板变量
+                {{ config.custom && config.custom.variable ? config.custom.variable : "变量" }}
             </n-divider>
             <n-form
                 ref="formRef"
@@ -36,7 +36,7 @@
                 </n-form-item>
             </n-form>
             <n-divider title-placement="left">
-                字段
+                {{ config.custom && config.custom.field ? config.custom.field : "字段" }}
             </n-divider>
             <n-data-table :columns="columns" :data="fields" />
         </template>
@@ -46,7 +46,7 @@
                     <n-icon mr-2>
                         <Add />
                     </n-icon>
-                    添加字段
+                    添加{{ config.custom && config.custom.field ? config.custom.field : "字段" }}
                 </NButton>
                 <NButton tertiary type="primary" @click="asyncGenerate">
                     <n-icon mr-2>
@@ -81,6 +81,7 @@ function onAfterEnter() {
     state.get(state.templateConfig).then((res) => {
         res.data.text().then((data: string) => {
             config.value = JSON.parse(data)
+
             if (Object.keys(state.variables).length === 0) {
                 for (const key in config.value.variables) {
                     const item = config.value.variables[key]
