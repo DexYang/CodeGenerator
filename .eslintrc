@@ -19,6 +19,7 @@
             "multiline": "never"
           }],
         "@typescript-eslint/comma-dangle": ["error", "never"],
-        "vue/no-deprecated-v-bind-sync": "off"
+        "vue/no-deprecated-v-bind-sync": "off",
+        "no-console": "off"
     }
 }

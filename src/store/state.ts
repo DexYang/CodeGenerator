@@ -4,13 +4,16 @@ import ejs from 'ejs'
 import FileSaver from 'file-saver'
 import JSZip from 'jszip'
 import { createDiscreteApi } from 'naive-ui'
-import SHA256 from 'crypto-js/sha256'
 import MD5 from 'crypto-js/md5'
+import SHA256 from 'crypto-js/sha256'
 import { get } from '~/api/resource'
 
 const { loadingBar } = createDiscreteApi(['loadingBar'])
-const sha256 = SHA256
-const md5 = MD5
+
+const _md5 = MD5
+const _sha256 = SHA256
+console.log('预置函数_md5:', _md5)
+console.log('预置函数_sha256:', _sha256)
 
 interface FileStructure {
     [key: string]: FileStructure | string
@@ -95,13 +98,13 @@ export const useState = defineStore('state', {
             const res = await get(`${this.templateSource !== '' ? `${this.templateSource}/` : ''}${path}`)
             return res
         },
-        setFields(fields: Array<Record<any, any>>, fieldOptions: Record<any, any>) {
+        async setFields(fields: Array<Record<any, any>>, fieldOptions: Record<any, any>) {
             for (const key in fieldOptions) {
                 const option = fieldOptions[key]
                 if (option.type === 'function') {
                     // eslint-disable-next-line no-eval
                     const func = eval(option.function)
-                    fields.map(item => func(item))
+                    await fields.map(async item => func(item))
                 }
             }
             this.fields = fields
