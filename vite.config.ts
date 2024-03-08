@@ -60,11 +60,6 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
             // https://github.com/antfu/unocss
             // see uno.config.ts for config
             UnoCSS()
-        ],
-
-        // https://github.com/vitest-dev/vitest
-        test: {
-            environment: 'jsdom'
-        }
+        ]
     }
 }

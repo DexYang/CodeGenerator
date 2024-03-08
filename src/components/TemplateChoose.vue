@@ -13,7 +13,7 @@
                     <n-popover :show-icon="false" :show="extShow" trigger="manual" :on-clickoutside="() => extShow = false">
                         <template #trigger>
                             <n-button size="small" rotate-45 w-100px h-20px type="error" text-sm @click="() => extShow = true">
-                                Netlify
+                                EXT
                             </n-button>
                         </template>
                         <div flex-inline>
@@ -72,18 +72,16 @@ const loadingBar = useLoadingBar()
 const templates: Ref<Array<Record<any, any>>> = ref([])
 const noRepeat: { [key: string]: boolean } = {}
 
-function loadConfig(source: string) {
-    state.get(`${source}/config.json`).then((res) => {
-        res.data.text().then((data: string) => {
-            const config = JSON.parse(data)
-            config.templates.forEach((item: any) => {
-                item.source = source
-                if ((item.source + item.config) in noRepeat)
-                    return
-                noRepeat[item.source + item.config] = true
-                templates.value.push(item)
-            })
-        })
+async function loadConfig(source: string) {
+    const res = await state.get(`${source}/config.json`)
+    const data = await res.data.text()
+    const config = JSON.parse(data)
+    config.templates.forEach((item: any) => {
+        item.source = source
+        if ((item.source + item.config) in noRepeat)
+            return
+        noRepeat[item.source + item.config] = true
+        templates.value.push(item)
     })
 }
 
@@ -101,20 +99,17 @@ async function configExtLink() {
         loadConfig(extLink.value)
         loadingBar.finish()
         extShow.value = false
-    }
-    catch (error) {
+    } catch (error) {
         message.error('该链接资源无法访问')
         loadingBar.error()
     }
 }
 
-function setup() {
+onMounted(() => {
     loadConfig('')
     if ('url' in route.query) {
         extLink.value = route.query.url
         configExtLink()
     }
-}
-
-setup()
+})
 </script>

@@ -4,6 +4,11 @@
       "config": "open_templates/db/config.json",
       "description": "DDL的简单模板",
       "icon": "mdi:database"
+    },
+    {
+      "config": "open_templates/mock/config.json",
+      "description": "模拟数据模板",
+      "icon": "mdi:database"
     }
   ]
 }

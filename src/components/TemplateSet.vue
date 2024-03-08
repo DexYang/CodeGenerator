@@ -15,30 +15,53 @@
             </p>
         </template>
         <template #default>
-            <n-divider title-placement="left">
-                {{ config.custom && config.custom.variable ? config.custom.variable : "变量" }}
-            </n-divider>
-            <n-form
-                ref="formRef"
-                inline
-                :label-width="80"
-                :model="variables"
-                size="small">
-                <n-form-item
-                    v-for="(item, key) in config.variables"
-                    :key="key"
-                    :label="item.label" :path="key.toString()" :rule="{
-                        required: true,
-                        validator: item.rule ? evalRule(item.rule) : undefined,
-                        trigger: ['input', 'blur'],
-                    }">
-                    <NInput v-model:value="variables[key.toString()]" :placeholder="key.toString()" />
-                </n-form-item>
-            </n-form>
-            <n-divider title-placement="left">
-                {{ config.custom && config.custom.field ? config.custom.field : "字段" }}
-            </n-divider>
-            <n-data-table :columns="columns" :data="fields" />
+            <div v-if="config.variables">
+                <n-divider title-placement="left">
+                    {{ config.custom && config.custom.variable ? config.custom.variable : "变量" }}
+                </n-divider>
+                <n-form
+                    ref="formRef"
+                    inline
+                    :label-width="80"
+                    :model="variables"
+                    size="small">
+                    <n-form-item
+                        v-for="(item, key) in config.variables"
+                        :key="key"
+                        :label="item.label"
+                        :path="key.toString()"
+                        :rule="{
+                            required: true,
+                            validator: item.rule ? evalRule(item.rule) : undefined,
+                            trigger: ['input', 'blur'],
+                        }">
+                        <NInput v-model:value="variables[key.toString()]" :placeholder="key.toString()" />
+                    </n-form-item>
+                </n-form>
+            </div>
+
+            <div v-if="config.fields">
+                <n-divider title-placement="left">
+                    {{ config.custom && config.custom.field ? config.custom.field : "字段" }}
+                </n-divider>
+                <n-data-table :columns="columns" :data="fields" />
+            </div>
+
+            <div v-if="config.mock">
+                <n-divider title-placement="left">
+                    <NButton text @click="openWindow">
+                        Mock数据模板定义
+                    </NButton>
+                </n-divider>
+                <Codemirror
+                    v-model="mockData"
+                    placeholder="Code goes here..."
+                    :style="{ height: '100%' }"
+                    :autofocus="true"
+                    :indent-with-tab="true"
+                    :tab-size="2"
+                    :extensions="extensions" />
+            </div>
         </template>
         <template #footer>
             <n-space float-right>
@@ -63,6 +86,10 @@
 import { Add, Code } from '@vicons/ionicons5'
 import type { DataTableColumns, FormInst } from 'naive-ui'
 import { NButton, NInput, NSelect, NSwitch, useLoadingBar, useMessage } from 'naive-ui'
+
+import { Codemirror } from 'vue-codemirror'
+import { javascript } from '@codemirror/lang-javascript'
+import { oneDark } from '@codemirror/theme-one-dark'
 import { useState } from '~/store/state'
 
 const state = useState()
@@ -70,40 +97,53 @@ const config: Ref<Record<any, any>> = ref({})
 
 const variables: Ref<Record<any, any>> = ref({})
 const fields: Ref<Array<Record<any, any>>> = ref([])
+
 const columns: Ref<DataTableColumns<Record<any, any>>> = ref([])
 const requiredFieldOptions: Ref<Array<string>> = ref([])
+
+const extensions = computed(() => {
+    const res = [javascript(), oneDark]
+    return isDark.value ? res : res.slice(0, 1)
+})
+
+const mockData = ref('')
 
 const formRef = ref<FormInst | null>(null)
 const message = useMessage()
 const loadingBar = useLoadingBar()
 
-function onAfterEnter() {
-    state.get(state.templateConfig).then((res) => {
-        res.data.text().then((data: string) => {
-            config.value = JSON.parse(data)
+async function onAfterEnter() {
+    const res = await state.get(state.templateConfig)
+    const data = await res.data.text()
+    config.value = JSON.parse(data)
 
-            if (Object.keys(state.variables).length === 0) {
-                for (const key in config.value.variables) {
-                    const item = config.value.variables[key]
-                    variables.value[key] = item.default
-                }
-            }
-            else {
-                variables.value = state.variables
-            }
+    if (state.mockData === '') {
+        const mockRaw = await state.get(config.value.mock)
+        mockData.value = await mockRaw.data.text()
+    } else {
+        mockData.value = state.mockData
+    }
 
-            if (state.fields.length === 0) {
-                for (const item of config.value.fields) {
-                    item.key = Math.random().toString()
-                    fields.value.push(item)
-                }
-            }
-            else {
-                fields.value = state.fields
-            }
-            columns.value = createColumns(config.value.fieldOptions)
-        })
-    })
+    if (Object.keys(state.variables).length === 0) {
+        if (config.value.variables)
+        { for (const key in config.value.variables) {
+            const item = config.value.variables[key]
+            variables.value[key] = item.default
+        } }
+    } else {
+        variables.value = state.variables
+    }
+
+    if (state.fields.length === 0) {
+        if (config.value.fields)
+        { for (const item of config.value.fields) {
+            item.key = Math.random().toString()
+            fields.value.push(item)
+        } }
+    } else {
+        fields.value = state.fields
+    }
+    columns.value = createColumns(config.value.fieldOptions)
 }
 
 function createColumns(fieldOptions: Record<any, any>): DataTableColumns<Record<any, any>> {
@@ -127,8 +167,7 @@ function createColumns(fieldOptions: Record<any, any>): DataTableColumns<Record<
                             fields.value[index][key] = v
                         }
                     })
-                }
-                else if (item.type === 'bool') {
+                } else if (item.type === 'bool') {
                     return h(NSwitch, {
                         value: row[key],
                         onUpdateValue(v) {
@@ -193,6 +232,7 @@ async function asyncGenerate() {
         message.success('开始生成代码')
         loadingBar.start()
         state.variables = variables.value
+        state.setMock(mockData.value)
         state.setFields(fields.value, config.value.fieldOptions)
         state.templates = config.value.templates
         await state.loadFileStructure(config.value.fileStructure)
@@ -201,7 +241,6 @@ async function asyncGenerate() {
         state.templateSetVisible = false
     }
     catch (error) {
-        // eslint-disable-next-line no-console
         console.log(error)
         message.error('请填写必填内容')
     }
@@ -232,5 +271,9 @@ function onClose() {
         columns.value = []
         requiredFieldOptions.value = []
     }
+}
+
+function openWindow() {
+    window.open('https://lavyun.gitee.io/better-mock/document/syntax-specification.html#%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%9D%BF%E5%AE%9A%E4%B9%89%E8%A7%84%E8%8C%83-dtd')
 }
 </script>

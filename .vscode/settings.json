@@ -8,5 +8,6 @@
     "*.css": "postcss"
   },
   "editor.formatOnSave": false,
-  "vue.features.codeActions.enable": false
+  "vue.features.codeActions.enable": false,
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }
