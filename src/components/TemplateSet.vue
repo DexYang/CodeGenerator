@@ -117,11 +117,13 @@ async function onAfterEnter() {
     const data = await res.data.text()
     config.value = JSON.parse(data)
 
-    if (state.mockData === '') {
-        const mockRaw = await state.get(config.value.mock)
-        mockData.value = await mockRaw.data.text()
-    } else {
-        mockData.value = state.mockData
+    if (config.value.mock) {
+        if (state.mockData === '') {
+            const mockRaw = await state.get(config.value.mock)
+            mockData.value = await mockRaw.data.text()
+        } else {
+            mockData.value = state.mockData
+        }
     }
 
     if (Object.keys(state.variables).length === 0) {
