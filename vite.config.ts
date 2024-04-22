@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-
+/* eslint-disable node/prefer-global/process */
 import path from 'node:path'
 import type { ConfigEnv, UserConfigExport } from 'vite'
 import { loadEnv } from 'vite'
@@ -24,9 +24,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
         plugins: [
             VueMacros({
                 plugins: {
-                    vue: Vue({
-                        reactivityTransform: true
-                    })
+                    vue: Vue({})
                 }
             }),
 

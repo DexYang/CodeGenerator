@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { defineStore } from 'pinia'
 import { promiseTimeout } from '@vueuse/core'
 import ejs from 'ejs'
@@ -28,11 +29,11 @@ interface Templates {
 
 interface State {
     templateSource: string
+    templateKey: string
     templateChooseVisible: boolean
     templateSetVisible: boolean
     templateSetReopen: boolean
     templateConfig: string
-    templateSelected: string | undefined
     fileStructure: FileStructure
     variables: Record<string, any>
     mockData: string
@@ -44,11 +45,11 @@ interface State {
 export const useState = defineStore('state', {
     state: (): State => ({
         templateSource: '',
+        templateKey: '',
         templateChooseVisible: true,
         templateSetVisible: false,
         templateSetReopen: false,
         templateConfig: '',
-        templateSelected: '',
         fileStructure: {},
         variables: {},
         mockData: '',
@@ -68,8 +69,7 @@ export const useState = defineStore('state', {
             if (typeof pathOrObj === 'string') {
                 const res = await this.get(pathOrObj)
                 data = await res.data.text()
-            }
-            else {
+            } else {
                 data = JSON.stringify(pathOrObj)
             }
             const render = ejs.compile(data)
@@ -148,13 +148,11 @@ export const useState = defineStore('state', {
                     const item: any = obj[key]
                     if (Object.keys(item).length === 0) {
                         zip.folder(`${path}/${key}`)
-                    }
-                    else if (typeof item !== 'object') {
+                    } else if (typeof item !== 'object') {
                         zip.folder(path)
                         const blob = new Blob([item])
                         zip.file(`${path}/${key}`, blob, { binary: true })
-                    }
-                    else {
+                    } else {
                         dfs(item, `${path}/${key}`)
                     }
                 }

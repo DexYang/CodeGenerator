@@ -1,87 +1,3 @@
-<template>
-    <n-modal
-        v-model:show="state.templateSetVisible"
-        :mask-closable="state.templateSetReopen"
-        :close-on-esc="state.templateSetReopen"
-        closable
-        :show-icon="false"
-        :on-after-enter="onAfterEnter"
-        :on-close="onClose"
-        class="w-80%!"
-        preset="card">
-        <template #header>
-            <p m-0>
-                模板参数配置
-            </p>
-        </template>
-        <template #default>
-            <div v-if="config.variables">
-                <n-divider title-placement="left">
-                    {{ config.custom && config.custom.variable ? config.custom.variable : "变量" }}
-                </n-divider>
-                <n-form
-                    ref="formRef"
-                    inline
-                    :label-width="80"
-                    :model="variables"
-                    size="small">
-                    <n-form-item
-                        v-for="(item, key) in config.variables"
-                        :key="key"
-                        :label="item.label"
-                        :path="key.toString()"
-                        :rule="{
-                            required: true,
-                            validator: item.rule ? evalRule(item.rule) : undefined,
-                            trigger: ['input', 'blur'],
-                        }">
-                        <NInput v-model:value="variables[key.toString()]" :placeholder="key.toString()" />
-                    </n-form-item>
-                </n-form>
-            </div>
-
-            <div v-if="config.fields">
-                <n-divider title-placement="left">
-                    {{ config.custom && config.custom.field ? config.custom.field : "字段" }}
-                </n-divider>
-                <n-data-table :columns="columns" :data="fields" />
-            </div>
-
-            <div v-if="config.mock">
-                <n-divider title-placement="left">
-                    <NButton text @click="openWindow">
-                        Mock数据模板定义
-                    </NButton>
-                </n-divider>
-                <Codemirror
-                    v-model="mockData"
-                    placeholder="Code goes here..."
-                    :style="{ height: '100%' }"
-                    :autofocus="true"
-                    :indent-with-tab="true"
-                    :tab-size="2"
-                    :extensions="extensions" />
-            </div>
-        </template>
-        <template #footer>
-            <n-space float-right>
-                <NButton tertiary type="info" @click="addRow">
-                    <n-icon mr-2>
-                        <Add />
-                    </n-icon>
-                    添加{{ config.custom && config.custom.field ? config.custom.field : "字段" }}
-                </NButton>
-                <NButton tertiary type="primary" @click="asyncGenerate">
-                    <n-icon mr-2>
-                        <Code />
-                    </n-icon>
-                    生成
-                </NButton>
-            </n-space>
-        </template>
-    </n-modal>
-</template>
-
 <script lang="ts" setup>
 import { Add, Code } from '@vicons/ionicons5'
 import type { DataTableColumns, FormInst } from 'naive-ui'
@@ -127,21 +43,23 @@ async function onAfterEnter() {
     }
 
     if (Object.keys(state.variables).length === 0) {
-        if (config.value.variables)
-        { for (const key in config.value.variables) {
-            const item = config.value.variables[key]
-            variables.value[key] = item.default
-        } }
+        if (config.value.variables) {
+            for (const key in config.value.variables) {
+                const item = config.value.variables[key]
+                variables.value[key] = item.default
+            }
+        }
     } else {
         variables.value = state.variables
     }
 
     if (state.fields.length === 0) {
-        if (config.value.fields)
-        { for (const item of config.value.fields) {
-            item.key = Math.random().toString()
-            fields.value.push(item)
-        } }
+        if (config.value.fields) {
+            for (const item of config.value.fields) {
+                item.key = Math.random().toString()
+                fields.value.push(item)
+            }
+        }
     } else {
         fields.value = state.fields
     }
@@ -176,8 +94,7 @@ function createColumns(fieldOptions: Record<any, any>): DataTableColumns<Record<
                             fields.value[index][key] = v
                         }
                     })
-                }
-                else if (item.type === 'select') {
+                } else if (item.type === 'select') {
                     return h(NSelect, {
                         value: row[key],
                         clearable: true,
@@ -241,10 +158,10 @@ async function asyncGenerate() {
         await state.generate()
         loadingBar.finish()
         state.templateSetVisible = false
-    }
-    catch (error) {
+    } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
-        message.error('请填写必填内容')
+        message.error('请填写具体参数')
     }
 }
 
@@ -279,3 +196,87 @@ function openWindow() {
     window.open('https://lavyun.gitee.io/better-mock/document/syntax-specification.html#%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%9D%BF%E5%AE%9A%E4%B9%89%E8%A7%84%E8%8C%83-dtd')
 }
 </script>
+
+<template>
+    <n-modal
+        v-model:show="state.templateSetVisible"
+        :mask-closable="state.templateSetReopen"
+        :close-on-esc="state.templateSetReopen"
+        closable
+        :show-icon="false"
+        :on-after-enter="onAfterEnter"
+        :on-close="onClose"
+        class="w-80%!"
+        preset="card">
+        <template #header>
+            <p m-0>
+                模板参数配置
+            </p>
+        </template>
+        <template #default>
+            <div v-if="config.variables">
+                <n-divider title-placement="left">
+                    {{ config.custom && config.custom.variable ? config.custom.variable : "变量" }}
+                </n-divider>
+                <n-form
+                    ref="formRef"
+                    inline
+                    :label-width="80"
+                    :model="variables"
+                    size="small">
+                    <n-form-item
+                        v-for="(item, key) in config.variables"
+                        :key="key"
+                        :label="item.label"
+                        :path="key.toString()"
+                        :rule="{
+                            required: true,
+                            validator: item.rule ? evalRule(item.rule) : undefined,
+                            trigger: ['input', 'blur'],
+                        }">
+                        <NInput v-model:value="variables[key.toString()]" :placeholder="key.toString()" />
+                    </n-form-item>
+                </n-form>
+            </div>
+
+            <div v-if="config.fields">
+                <n-divider title-placement="left">
+                    {{ config.custom && config.custom.field ? config.custom.field : "字段" }}
+                </n-divider>
+                <n-data-table :columns="columns" :data="fields" />
+            </div>
+
+            <div v-if="config.mock">
+                <n-divider title-placement="left">
+                    <NButton text @click="openWindow">
+                        Mock数据模板定义(点击查看Mock语法)
+                    </NButton>
+                </n-divider>
+                <Codemirror
+                    v-model="mockData"
+                    placeholder="Code goes here..."
+                    :style="{ height: '100%' }"
+                    :autofocus="true"
+                    :indent-with-tab="true"
+                    :tab-size="2"
+                    :extensions="extensions" />
+            </div>
+        </template>
+        <template #footer>
+            <n-space float-right>
+                <NButton tertiary type="info" @click="addRow">
+                    <n-icon mr-2>
+                        <Add />
+                    </n-icon>
+                    添加{{ config.custom && config.custom.field ? config.custom.field : "字段" }}
+                </NButton>
+                <NButton tertiary type="primary" @click="asyncGenerate">
+                    <n-icon mr-2>
+                        <Code />
+                    </n-icon>
+                    生成
+                </NButton>
+            </n-space>
+        </template>
+    </n-modal>
+</template>

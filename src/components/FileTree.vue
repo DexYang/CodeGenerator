@@ -1,76 +1,3 @@
-<template>
-    <div
-        m-2
-        mr-1
-        pt-1
-        rounded-2
-        bg-white
-        dark:bg-gray-800
-        flex-col
-        flex
-        w-full>
-        <div flex-1 @click.right="showContextMenu($event)">
-            <div v-if="(!state.templateSetVisible && !state.templateChooseVisible) || state.templateSetReopen">
-                <n-scrollbar max-h-90vh>
-                    <n-tree
-                        draggable
-                        block-line
-                        expand-on-click
-                        default-expand-all
-                        :check-on-click="expandAll"
-                        text-left
-                        :data="data"
-                        :node-props="nodeProps"
-                        :on-update:expanded-keys="updatePrefixWithExpanded"
-                        @drop="handleDrop" />
-                </n-scrollbar>
-            </div>
-            <div v-else text-left pl-3>
-                <n-skeleton text class="w-50%" />
-                <n-skeleton text class="w-50% ml-7" />
-                <n-skeleton text class="w-60% ml-14" />
-                <n-skeleton text class="w-70% ml-7" />
-                <n-skeleton text class="w-40% ml-14" />
-                <n-skeleton text class="w-40% ml-21" />
-                <n-skeleton text class="w-40%" />
-                <n-skeleton text class="w-50% ml-7" />
-                <n-skeleton text class="w-40% ml-14" />
-                <n-skeleton text class="w-40% ml-21" />
-            </div>
-        </div>
-        <TheFooter />
-        <n-popover trigger="manual" :show="inputPopoverShow" :x="inputPopoverX" :y="inputPopoverY" placement="right" :on-clickoutside="() => inputPopoverShow = false">
-            <div flex-inline>
-                <n-input v-model:value="inputPopoverValue" placeholder="" type="text" size="small" mr-2 />
-                <n-button size="small" type="success" mr-2 @click="changeFileName">
-                    确认
-                </n-button>
-                <n-popconfirm
-                    negative-text="取消"
-                    positive-text="确认"
-                    @positive-click="deleteFile">
-                    <template #trigger>
-                        <n-button size="small" type="error">
-                            删除
-                        </n-button>
-                    </template>
-                    是否确认删除
-                </n-popconfirm>
-            </div>
-        </n-popover>
-        <n-popover trigger="manual" :show="createPopoverShow" :x="createPopoverX" :y="createPopoverY" placement="right" :on-clickoutside="() => createPopoverShow = false">
-            <div flex-inline>
-                <n-button size="small" type="info" mr-3 @click="createFileOrFolder(0)">
-                    新建文件夹
-                </n-button>
-                <n-button size="small" type="primary" @click="createFileOrFolder(1)">
-                    新建文件
-                </n-button>
-            </div>
-        </n-popover>
-    </div>
-</template>
-
 <script lang="ts" setup>
 import { h } from 'vue'
 import type { TreeDropInfo, TreeOption } from 'naive-ui'
@@ -92,12 +19,10 @@ const inputPopoverValue = ref('')
 const inputPopoverKey = ref('')
 const expandAll = ref(true)
 
-function updatePrefixWithExpanded(_keys: Array<string | number>,
-    _option: Array<TreeOption | null>,
-    meta: {
-        node: TreeOption | null
-        action: 'expand' | 'collapse' | 'filter'
-    }) {
+function updatePrefixWithExpanded(_keys: Array<string | number>, _option: Array<TreeOption | null>, meta: {
+    node: TreeOption | null
+    action: 'expand' | 'collapse' | 'filter'
+}) {
     if (!meta.node)
         return
     if (meta.action === 'expand') {
@@ -136,7 +61,7 @@ function changeFileName() {
         message.error('请填写文件名')
         return
     }
-    const { parent, key }: { parent: Record<any, any>; key: string } = locate(inputPopoverKey.value)
+    const { parent, key }: { parent: Record<any, any>, key: string } = locate(inputPopoverKey.value)
     if (inputPopoverValue.value in parent) {
         message.error('文件名重复')
         return
@@ -148,7 +73,7 @@ function changeFileName() {
 }
 
 function deleteFile() {
-    const { parent, key }: { parent: Record<any, any>; key: string } = locate(inputPopoverKey.value)
+    const { parent, key }: { parent: Record<any, any>, key: string } = locate(inputPopoverKey.value)
     delete parent[key]
     inputPopoverValue.value = ''
     inputPopoverShow.value = false
@@ -159,7 +84,7 @@ interface FileStructure {
     [key: string]: FileStructure | string
 }
 
-function locate(treeKey: string): { parent: Record<any, any>; key: string } {
+function locate(treeKey: string): { parent: Record<any, any>, key: string } {
     const path = treeKey.split('/').filter(item => item !== '')
     let loc = state.fileStructure
     let parent = loc
@@ -187,7 +112,9 @@ function dfs(obj: any, path: string) {
         }
         if (typeof obj[key] === 'object') {
             item.prefix = () => h(
-                NIcon, null, {
+                NIcon,
+                null,
+                {
                     default: () => h(Folder)
                 }
             )
@@ -195,7 +122,9 @@ function dfs(obj: any, path: string) {
         }
         else {
             item.prefix = () => h(
-                NIcon, null, {
+                NIcon,
+                null,
+                {
                     default: () => h(DocumentText)
                 }
             )
@@ -246,3 +175,68 @@ function createFileOrFolder(type: 0 | 1) {
     expandAll.value = false
 }
 </script>
+
+<template>
+    <div
+        m-2 mr-1 w-full flex flex-col rounded-2 bg-white pt-1 dark:bg-gray-800>
+        <div flex-1 @click.right="showContextMenu($event)">
+            <div v-if="(!state.templateSetVisible && !state.templateChooseVisible) || state.templateSetReopen">
+                <n-scrollbar max-h-90vh>
+                    <n-tree
+                        draggable
+                        block-line
+                        expand-on-click
+                        default-expand-all
+                        :check-on-click="expandAll"
+                        text-left
+                        :data="data"
+                        :node-props="nodeProps"
+                        :on-update:expanded-keys="updatePrefixWithExpanded"
+                        @drop="handleDrop" />
+                </n-scrollbar>
+            </div>
+            <div v-else pl-3 text-left>
+                <n-skeleton text class="w-50%" />
+                <n-skeleton text class="ml-7 w-50%" />
+                <n-skeleton text class="ml-14 w-60%" />
+                <n-skeleton text class="ml-7 w-70%" />
+                <n-skeleton text class="ml-14 w-40%" />
+                <n-skeleton text class="ml-21 w-40%" />
+                <n-skeleton text class="w-40%" />
+                <n-skeleton text class="ml-7 w-50%" />
+                <n-skeleton text class="ml-14 w-40%" />
+                <n-skeleton text class="ml-21 w-40%" />
+            </div>
+        </div>
+        <TheFooter />
+        <n-popover trigger="manual" :show="inputPopoverShow" :x="inputPopoverX" :y="inputPopoverY" placement="right" :on-clickoutside="() => inputPopoverShow = false">
+            <div flex-inline>
+                <n-input v-model:value="inputPopoverValue" placeholder="" type="text" size="small" mr-2 />
+                <n-button size="small" type="success" mr-2 @click="changeFileName">
+                    确认
+                </n-button>
+                <n-popconfirm
+                    negative-text="取消"
+                    positive-text="确认"
+                    @positive-click="deleteFile">
+                    <template #trigger>
+                        <n-button size="small" type="error">
+                            删除
+                        </n-button>
+                    </template>
+                    是否确认删除
+                </n-popconfirm>
+            </div>
+        </n-popover>
+        <n-popover trigger="manual" :show="createPopoverShow" :x="createPopoverX" :y="createPopoverY" placement="right" :on-clickoutside="() => createPopoverShow = false">
+            <div flex-inline>
+                <n-button size="small" type="info" mr-3 @click="createFileOrFolder(0)">
+                    新建文件夹
+                </n-button>
+                <n-button size="small" type="primary" @click="createFileOrFolder(1)">
+                    新建文件
+                </n-button>
+            </div>
+        </n-popover>
+    </div>
+</template>

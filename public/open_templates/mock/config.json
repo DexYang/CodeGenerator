@@ -1,70 +1,68 @@
 {
-  "fileStructure": {
-    "data": {
-      "txt": {},
-      "esBulk": {},
-      "json": {},
-      "DML": {}
-    }
-  },
-  "custom":{
-    "field": "字典"
-  },
-  "templates": [
-    {
-      "name": "data.txt",
-      "from": "open_templates/mock/txt/txt.ejs",
-      "to": "/data/txt/"
+    "fileStructure": {
+        "data": {
+            "txt": {},
+            "esBulk": {},
+            "json": {},
+            "DML": {}
+        }
     },
-    {
-      "name": "es.txt",
-      "from": "open_templates/mock/es_bulk/es_bulk.ejs",
-      "to": "/data/esBulk/"
-    }
-    ,
-    {
-      "name": "json.json",
-      "from": "open_templates/mock/json/json.ejs",
-      "to": "/data/json/"
-    }
-    ,
-    {
-      "name": "dml.sql",
-      "from": "open_templates/mock/DML/dml.ejs",
-      "to": "/data/DML/"
-    }
-  ],
-  "variables": {
-    "__mock__separator": {
-      "label": "分隔符",
-      "default": "|"
+    "custom": {
+        "field": "字典"
     },
-    "__mock__esIndex": {
-      "label": "ES索引名",
-      "default": "ES索引名"
+    "templates": [
+        {
+            "name": "data.txt",
+            "from": "open_templates/mock/txt/txt.ejs",
+            "to": "/data/txt/"
+        },
+        {
+            "name": "es.txt",
+            "from": "open_templates/mock/es_bulk/es_bulk.ejs",
+            "to": "/data/esBulk/"
+        },
+        {
+            "name": "json.json",
+            "from": "open_templates/mock/json/json.ejs",
+            "to": "/data/json/"
+        },
+        {
+            "name": "dml.sql",
+            "from": "open_templates/mock/DML/dml.ejs",
+            "to": "/data/DML/"
+        }
+    ],
+    "variables": {
+        "__mock__separator": {
+            "label": "分隔符",
+            "default": "|"
+        },
+        "__mock__esIndex": {
+            "label": "ES索引名",
+            "default": "ES索引名"
+        },
+        "__mock__tableName": {
+            "label": "表名",
+            "default": "表名"
+        }
     },
-    "__mock__tableName": {
-      "label": "表名",
-      "default": "表名"
-    }
-  },
-  "fields": [
-    {
-      "__mock__dictName": "customDict",
-      "__mock__dictValue": "Q,W,E,R"
-    }
-  ],
-  "fieldOptions": {
-    "__mock__dictName": {
-      "label": "字典名",
-      "type": "input",
-      "require": true
+    "fields": [
+        {
+            "__mock__dictName": "customDict",
+            "__mock__dictValue": "Q,W,E,R"
+        }
+    ],
+    "fieldOptions": {
+        "__mock__dictName": {
+            "label": "字典名",
+            "type": "input",
+            "require": true
+        },
+        "__mock__dictValue": {
+            "label": "字段值",
+            "type": "input",
+            "require": true
+        }
     },
-    "__mock__dictValue": {
-      "label": "字段值",
-      "type": "input",
-      "require": true
-    }
-  },
-  "mock": "open_templates/mock/mockTemplate.js"
+    "mock": "open_templates/mock/mockTemplate.js"
 }

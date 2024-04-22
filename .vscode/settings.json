@@ -1,13 +1,37 @@
 {
-  "cSpell.words": ["Vitesse"],
-  "prettier.enable": false,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "files.associations": {
-    "*.css": "postcss"
-  },
-  "editor.formatOnSave": false,
-  "vue.features.codeActions.enable": false,
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+    "cSpell.words": ["Vitesse"],
+    "files.associations": {
+        "*.css": "postcss"
+    },
+    "vue.features.codeActions.enable": false,
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+
+    // Enable the ESlint flat config support
+    "eslint.useFlatConfig": true,
+
+    // Disable the default formatter, use eslint instead
+    "editor.formatOnSave": false,
+
+    // Auto fix
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "never"
+    },
+
+    // Enable eslint for all supported languages
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "vue",
+        "html",
+        "markdown",
+        "json",
+        "jsonc",
+        "yaml",
+        "toml",
+        "gql",
+        "graphql"
+    ]
 }

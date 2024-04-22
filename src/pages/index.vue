@@ -1,8 +1,8 @@
 <template>
-    <div overflow-hidden h-100vh bg-warmGray-200 dark:bg-dark-900>
-        <div relative h-100vh float-left>
-            <div w-240px h-inherit resize-x cursor-e-resize cursor-col-resize opacity-0 overflow-scroll rounded-2 class="resize-bar" />
-            <div absolute top-0 right-5px bottom-0 left-0 overflow-x-hidden flex>
+    <div h-100vh overflow-hidden bg-warmgray-200 dark:bg-dark-900>
+        <div relative float-left h-100vh>
+            <div h-inherit w-240px cursor-col-resize cursor-e-resize resize-x overflow-scroll rounded-2 opacity-0 class="resize-bar" />
+            <div absolute bottom-0 left-0 right-5px top-0 flex overflow-x-hidden>
                 <FileTree />
             </div>
         </div>
@@ -16,8 +16,6 @@
 
 <style>
 .resize-bar::-webkit-scrollbar {
-  height: inherit;
-  width: 200px;
-  border-radius: 0.5rem;
+    @apply h-inherit w-200px b-rd-0.5rem;
 }
 </style>

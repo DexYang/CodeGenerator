@@ -1,30 +1,3 @@
-<template>
-    <div class="w-full bg-white p-2 dark:bg-gray-800 m-2 ml-1 rounded-2 text-left">
-        <div v-if="(!state.templateSetVisible && !state.templateChooseVisible) || state.templateSetReopen" h-full>
-            <Codemirror
-                v-model="code"
-                placeholder="Code goes here..."
-                :style="{ height: '100%' }"
-                :autofocus="true"
-                :indent-with-tab="true"
-                :tab-size="4"
-                :extensions="extensions" />
-        </div>
-        <div v-else text-left pl-3>
-            <n-skeleton text class="w-50%" />
-            <n-skeleton text class="w-50% ml-7" />
-            <n-skeleton text class="w-60% ml-14" />
-            <n-skeleton text class="w-70% ml-7" />
-            <n-skeleton text class="w-60% ml-14" />
-            <n-skeleton text class="w-60% ml-21" />
-            <n-skeleton text class="w-90%" />
-            <n-skeleton text class="w-50% ml-7" />
-            <n-skeleton text class="w-80% ml-14" />
-            <n-skeleton text class="w-70% ml-21" />
-        </div>
-    </div>
-</template>
-
 <script lang="ts" setup>
 import { Codemirror } from 'vue-codemirror'
 import { java } from '@codemirror/lang-java'
@@ -71,3 +44,30 @@ const extensions = computed(() => {
     return isDark.value ? res : res.slice(0, 2)
 })
 </script>
+
+<template>
+    <div class="m-2 ml-1 w-full rounded-2 bg-white p-2 text-left dark:bg-gray-800">
+        <div v-if="(!state.templateSetVisible && !state.templateChooseVisible) || state.templateSetReopen" h-full>
+            <Codemirror
+                v-model="code"
+                placeholder="Code goes here..."
+                :style="{ height: '100%' }"
+                :autofocus="true"
+                :indent-with-tab="true"
+                :tab-size="4"
+                :extensions="extensions" />
+        </div>
+        <div v-else pl-3 text-left>
+            <n-skeleton text class="w-50%" />
+            <n-skeleton text class="ml-7 w-50%" />
+            <n-skeleton text class="ml-14 w-60%" />
+            <n-skeleton text class="ml-7 w-70%" />
+            <n-skeleton text class="ml-14 w-60%" />
+            <n-skeleton text class="ml-21 w-60%" />
+            <n-skeleton text class="w-90%" />
+            <n-skeleton text class="ml-7 w-50%" />
+            <n-skeleton text class="ml-14 w-80%" />
+            <n-skeleton text class="ml-21 w-70%" />
+        </div>
+    </div>
+</template>

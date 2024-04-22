@@ -9,10 +9,10 @@
             class="relative"
             preset="dialog">
             <template #header>
-                <div absolute top-0 right-0 w-65px h-70px overflow-hidden>
+                <div absolute right-0 top-0 h-70px w-65px overflow-hidden>
                     <n-popover :show-icon="false" :show="extShow" trigger="manual" :on-clickoutside="() => extShow = false">
                         <template #trigger>
-                            <n-button size="small" rotate-45 w-100px h-20px type="error" text-sm @click="() => extShow = true">
+                            <n-button size="small" type="error" h-20px w-100px rotate-45 text-sm @click="() => extShow = true">
                                 EXT
                             </n-button>
                         </template>
@@ -24,7 +24,7 @@
                         </div>
                     </n-popover>
                 </div>
-                <p my-0 mx-a mb-5>
+                <p mx-a my-0 mb-5>
                     模板选择
                 </p>
             </template>
@@ -32,18 +32,15 @@
                 <n-button
                     v-for="(item, index) in templates"
                     :key="index"
-                    w-full
-                    h-50px
-                    mb-5
-                    relative
+                    relative mb-5 h-50px w-full
                     @click="onClick(item)">
                     <template #icon>
                         <Icon :icon="item.icon" />
                     </template>
-                    <div v-if="item.source !== ''" absolute top-0 right-0 w-30px h-full overflow-hidden>
+                    <div v-if="item.source !== ''" absolute right-0 top-0 h-full w-30px overflow-hidden>
                         <n-popover trigger="hover" placement="right">
                             <template #trigger>
-                                <n-tag size="small" bg-red rotate-45 w-50px h-10px text-xs />
+                                <n-tag size="small" h-10px w-50px rotate-45 bg-red text-xs />
                             </template>
                             外部链接地址:
                             <p m-0>
@@ -78,9 +75,10 @@ async function loadConfig(source: string) {
     const config = JSON.parse(data)
     config.templates.forEach((item: any) => {
         item.source = source
-        if ((item.source + item.config) in noRepeat)
+        item.key = source + item.config
+        if (item.key in noRepeat)
             return
-        noRepeat[item.source + item.config] = true
+        noRepeat[item.key] = true
         templates.value.push(item)
     })
 }

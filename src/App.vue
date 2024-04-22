@@ -1,9 +1,8 @@
 <template>
     <n-config-provider
         :theme="theme"
-        font-sans
         text="center gray-700 dark:gray-200"
-        h-full>
+        h-full font-sans>
         <n-loading-bar-provider>
             <n-message-provider>
                 <RouterView />

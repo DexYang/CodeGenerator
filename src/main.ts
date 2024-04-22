@@ -5,7 +5,6 @@ import App from './App.vue'
 
 import { pinia } from '~/store'
 
-import './styles/main.css'
 import 'uno.css'
 
 const app = createApp(App)
