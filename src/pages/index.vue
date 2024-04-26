@@ -9,7 +9,7 @@
         <div h-100vh flex overflow-hidden>
             <CodeSpace />
         </div>
-        <TemplateChoose />
+        <TemplateSelect />
         <TemplateSet />
     </div>
 </template>

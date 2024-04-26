@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { defineStore } from 'pinia'
-import { promiseTimeout } from '@vueuse/core'
+import { promiseTimeout, useStorage } from '@vueuse/core'
 import ejs from 'ejs'
 import FileSaver from 'file-saver'
 import JSZip from 'jszip'
@@ -8,9 +8,15 @@ import { createDiscreteApi } from 'naive-ui'
 import MD5 from 'crypto-js/md5'
 import SHA256 from 'crypto-js/sha256'
 import Mock from 'better-mock'
-import { get } from '~/api/resource'
+import { get } from '~/api/request'
 
-const { loadingBar } = createDiscreteApi(['loadingBar'])
+if (import.meta.hot)
+    import.meta.hot.accept()
+
+export const latest_key_cn = '最新生成'
+export const latest_key = 'latest__'
+
+const { loadingBar, message } = createDiscreteApi(['loadingBar', 'message'])
 
 const _md5 = MD5
 const _sha256 = SHA256
@@ -21,82 +27,180 @@ interface FileStructure {
     [key: string]: FileStructure | string
 }
 
+export interface ResourceConfig {
+    config: string
+    description: string
+    icon: string
+    source: string
+    key: string
+}
+
+export interface TemplateConfig {
+    variables?: Record<string, Variables>
+    fields?: Array<Record<string, string>>
+    mock?: string
+
+    fileStructure?: Record<string, any> | string // 不可变
+    templates?: Array<Templates>
+    fieldOptions?: Record<string, any>
+    custom?: Record<string, string>
+}
+
+interface Variables {
+    label: string
+    default?: string | number
+    rule?: string
+}
+
 interface Templates {
     name: string
     from: string
     to: string
 }
 
-interface State {
-    templateSource: string
-    templateKey: string
-    templateChooseVisible: boolean
+interface MutableData {
+    variables: Record<string, any>
+    fields: Array<Record<string, any>>
+    mockData?: string
+}
+
+interface State extends MutableData {
+    resourceConfig?: ResourceConfig
+    templateSelectVisible: boolean
     templateSetVisible: boolean
     templateSetReopen: boolean
-    templateConfig: string
+    templateConfig?: TemplateConfig
+
     fileStructure: FileStructure
-    variables: Record<string, any>
-    mockData: string
     mock: Record<string, any>
-    fields: Array<Record<string, any>>
-    templates: Array<Templates>
+
+    templateSelected?: string
+
+    storageKeys?: any
 }
 
 export const useState = defineStore('state', {
     state: (): State => ({
-        templateSource: '',
-        templateKey: '',
-        templateChooseVisible: true,
+        resourceConfig: undefined,
+        templateSelectVisible: true,
         templateSetVisible: false,
         templateSetReopen: false,
-        templateConfig: '',
-        fileStructure: {},
-        variables: {},
+
+        templateConfig: undefined,
         mockData: '',
+        variables: {},
         fields: [],
-        mock: {},
-        templates: []
+        fileStructure: {},
+
+        mock: {}
     }),
     actions: {
-        async chooseTemplate(template: string): Promise<void> {
+        async selectTemplate(config: ResourceConfig) {
             await promiseTimeout(400)
-            this.templateChooseVisible = false
+            this.resourceConfig = config
+            await this.loadTemplateConfig()
+            this.templateSelectVisible = false
             this.templateSetVisible = true
-            this.templateConfig = template
         },
-        async loadFileStructure(pathOrObj: string | object) {
+        async get(path: string) {
+            const res = await get(`${
+                this.resourceConfig?.source !== ''
+                    ? `${this.resourceConfig?.source}/`
+                    : ''}${path}`)
+            return res
+        },
+        async loadTemplateConfig() {
+            const TemplateConfigBlob = await this.get(this.resourceConfig!.config!)
+            const TemplateConfigRaw = await TemplateConfigBlob.data.text()
+            this.templateConfig = JSON.parse(TemplateConfigRaw)
+            this.storageKeys = useStorage(`${this.resourceConfig!.key}__keys`, {})
+            const data = this.getFromLocalStorage()
+            if (data)
+                message.info('自动读取上次成功生成的模板配置')
+            await this.loadMutableData(data || this.templateConfig! as MutableData)
+        },
+        async loadOriginConfig() {
+            loadingBar.start()
+            await this.loadMutableData(this.templateConfig! as MutableData)
+            loadingBar.finish()
+        },
+        async loadSelectedConfig(key?: string) {
+            loadingBar.start()
+            const data = this.getFromLocalStorage(key)
+            await this.loadMutableData(data as MutableData)
+            loadingBar.finish()
+        },
+        async loadMutableData(data: MutableData) {
+            if (this.templateConfig!.mock) { // 加载mock数据
+                if (data.mockData) {
+                    this.mockData = data.mockData
+                } else {
+                    const mockBlob = await this.get(this.templateConfig!.mock)
+                    this.mockData = await mockBlob.data.text()
+                }
+            }
+            // debugger
+            if (data.variables && Object.keys(data.variables).length !== 0) {
+                this.variables = {}
+                for (const key in data.variables) {
+                    const item = data.variables[key]
+                    this.variables[key] = item.default || (typeof item === 'string' ? item : '')
+                }
+            }
+            if (data.fields && data.fields.length !== 0) {
+                this.fields = []
+                for (const item of data.fields) {
+                    item.key = Math.random().toString()
+                    this.fields.push(item)
+                }
+            }
+        },
+
+        async loadFileStructure() {
             let data
-            if (typeof pathOrObj === 'string') {
-                const res = await this.get(pathOrObj)
+            if (typeof this.templateConfig!.fileStructure === 'string') {
+                const res = await this.get(this.templateConfig!.fileStructure)
                 data = await res.data.text()
             } else {
-                data = JSON.stringify(pathOrObj)
+                data = JSON.stringify(this.templateConfig!.fileStructure)
             }
             const render = ejs.compile(data)
             const fileStructureJson = render({ variables: this.variables })
             this.fileStructure = JSON.parse(fileStructureJson)
         },
         async generate() {
-            const extendTemplates: Record<string, any> = {}
-            for (let i = 0; i < this.fields.length; i++) {
-                const field = this.fields[i]
-                const key: any = field['__mock__dictName' as any]
-                const value: any = field['__mock__dictValue' as any]
-                if (key) {
-                    extendTemplates[key] = function () {
-                        return this.pick(value.split(','))
+            console.time('time')
+            console.timeLog('time')
+            await this.loadFileStructure()
+            if (this.templateConfig!.mock) {
+                // eslint-disable-next-line no-eval
+                eval(`this.mock = {
+                  'list|${this.variables.__mock__total}': ${this.mockData!}
+                }`)
+
+                const extendTemplates: Record<string, any> = {}
+                for (let i = 0; i < this.fields.length; i++) {
+                    const field = this.fields[i]
+                    const key: any = field['__mock__dictName' as any]
+                    const value: any = field['__mock__dictValue' as any]
+                    if (key) {
+                        extendTemplates[key] = function () {
+                            return this.pick(value.split(','))
+                        }
                     }
                 }
+                Mock.Random.extend(extendTemplates)
             }
-            Mock.Random.extend(extendTemplates)
-            const mockData = Mock.mock(this.mock)
 
-            for (let i = 0; i < this.templates.length; i++) {
-                const item = this.templates[i]
+            const mockData = Mock.mock(this.mock)
+            console.timeLog('time')
+
+            for (let i = 0; i < this.templateConfig!.templates!.length; i++) {
+                const item = this.templateConfig!.templates![i]
                 // 模板内容渲染
-                const res = await this.get(item.from)
-                const data = await res.data.text()
-                const render = ejs.compile(data)
+                const templateBlob = await this.get(item.from)
+                const templateRaw = await templateBlob.data.text()
+                const render = ejs.compile(templateRaw)
 
                 const renderData = render({
                     variables: this.variables,
@@ -117,12 +221,36 @@ export const useState = defineStore('state', {
                 const renderName = ejs.compile(item.name.toString())
                 const name = renderName({ variables: this.variables })
                 loc[name] = renderData
+                console.timeLog('time')
             }
-            this.templateChooseVisible = false
+            console.timeEnd('time')
+            // 生成成功后保存本次参数
+            this.saveToLocalStorage()
+            this.storageKeys[latest_key_cn] = latest_key
         },
-        async get(path: string) {
-            const res = await get(`${this.templateSource !== '' ? `${this.templateSource}/` : ''}${path}`)
-            return res
+        saveConfigToLocalStorage(label: string, value: string) {
+            loadingBar.start()
+            this.storageKeys[label] = value
+            this.saveToLocalStorage(value)
+            loadingBar.finish()
+        },
+        deleteConfigToLocalStorage(label: string, value: string) {
+            loadingBar.start()
+            delete this.storageKeys[label]
+            localStorage.removeItem(`${this.resourceConfig!.key}__${value}`)
+            loadingBar.finish()
+        },
+        saveToLocalStorage(key?: string) {
+            const data: MutableData = {
+                variables: this.variables,
+                fields: this.fields,
+                mockData: this.mockData
+            }
+            localStorage.setItem(`${this.resourceConfig!.key}__${key || latest_key}`, JSON.stringify(data))
+        },
+        getFromLocalStorage(key?: string): MutableData {
+            const jsonString = localStorage.getItem(`${this.resourceConfig!.key}__${key || latest_key}`)
+            return JSON.parse(jsonString!) as MutableData
         },
         async setFields(fields: Array<Record<any, any>>, fieldOptions: Record<any, any>) {
             for (const key in fieldOptions) {
@@ -135,10 +263,18 @@ export const useState = defineStore('state', {
             }
             this.fields = fields
         },
-        async setMock(mockData: string) {
-            this.mockData = mockData
-            // eslint-disable-next-line no-eval
-            eval(mockData)
+        deleteRow(row: any) {
+            let index = 0
+            for (let i = 0; i < this.fields.length; i++) {
+                if (this.fields[i].key === row.key) {
+                    index = i
+                    break
+                }
+            }
+            this.fields.splice(index, 1)
+        },
+        addRow() {
+            this.fields.splice(0, 0, { key: Math.random().toString() })
         },
         export() {
             loadingBar.start()

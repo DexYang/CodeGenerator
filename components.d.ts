@@ -32,6 +32,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TemplateChoose: typeof import('./src/components/TemplateChoose.vue')['default']
+    TemplateSelect: typeof import('./src/components/TemplateSelect.vue')['default']
     TemplateSet: typeof import('./src/components/TemplateSet.vue')['default']
     TheFooter: typeof import('./src/components/TheFooter.vue')['default']
   }

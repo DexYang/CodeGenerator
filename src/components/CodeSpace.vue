@@ -47,7 +47,7 @@ const extensions = computed(() => {
 
 <template>
     <div class="m-2 ml-1 w-full rounded-2 bg-white p-2 text-left dark:bg-gray-800">
-        <div v-if="(!state.templateSetVisible && !state.templateChooseVisible) || state.templateSetReopen" h-full>
+        <div v-if="(!state.templateSetVisible && !state.templateSelectVisible) || state.templateSetReopen" h-full>
             <Codemirror
                 v-model="code"
                 placeholder="Code goes here..."

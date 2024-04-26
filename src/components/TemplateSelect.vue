@@ -1,7 +1,7 @@
 <template>
     <div>
         <n-modal
-            v-model:show="state.templateChooseVisible"
+            v-model:show="state.templateSelectVisible"
             :mask-closable="false"
             :close-on-esc="false"
             :closable="false"
@@ -33,7 +33,7 @@
                     v-for="(item, index) in templates"
                     :key="index"
                     relative mb-5 h-50px w-full
-                    @click="onClick(item)">
+                    @click="state.selectTemplate(item)">
                     <template #icon>
                         <Icon :icon="item.icon" />
                     </template>
@@ -59,41 +59,38 @@
 import { Icon } from '@iconify/vue'
 import { useLoadingBar, useMessage } from 'naive-ui'
 import { useRoute } from 'vue-router'
+import type { ResourceConfig } from '~/store/state'
 import { useState } from '~/store/state'
+import { get } from '~/api/request'
 
 const route = useRoute()
 const state = useState()
 const message = useMessage()
 const loadingBar = useLoadingBar()
 
-const templates: Ref<Array<Record<any, any>>> = ref([])
+const templates: Ref<Array<ResourceConfig>> = ref([])
 const noRepeat: { [key: string]: boolean } = {}
-
-async function loadConfig(source: string) {
-    const res = await state.get(`${source}/config.json`)
-    const data = await res.data.text()
-    const config = JSON.parse(data)
-    config.templates.forEach((item: any) => {
-        item.source = source
-        item.key = source + item.config
-        if (item.key in noRepeat)
-            return
-        noRepeat[item.key] = true
-        templates.value.push(item)
-    })
-}
-
-async function onClick(item: Record<any, any>) {
-    state.templateSource = item.source
-    await state.chooseTemplate(item.config)
-}
 
 const extLink: Ref<any> = ref('')
 const extShow = ref(false)
+
+async function loadConfig(source: string) {
+    const resourceBaseBlob = await get(`${source}/config.json`)
+    const rawData = await resourceBaseBlob.data.text()
+    const resourceConfig = JSON.parse(rawData)
+    resourceConfig.templates.forEach((item: ResourceConfig) => {
+        item.source = source
+        item.key = source + item.config
+        if (!(item.key in noRepeat)) {
+            noRepeat[item.key] = true
+            templates.value.push(item)
+        }
+    })
+}
+
 async function configExtLink() {
     loadingBar.start()
     try {
-        await state.get(`${extLink.value}/config.json`)
         loadConfig(extLink.value)
         loadingBar.finish()
         extShow.value = false

@@ -1,3 +1,4 @@
+import type { AxiosPromise } from 'axios'
 import axios from 'axios'
 
 const request = axios.create({
@@ -7,3 +8,11 @@ const request = axios.create({
 })
 
 export default request
+
+export function get(path: string): AxiosPromise {
+    return request({
+        url: `${path}`,
+        method: 'get',
+        responseType: 'blob'
+    })
+}

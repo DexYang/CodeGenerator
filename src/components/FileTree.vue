@@ -30,8 +30,7 @@ function updatePrefixWithExpanded(_keys: Array<string | number>, _option: Array<
             h(NIcon, null, {
                 default: () => h(FolderOpenOutline)
             })
-    }
-    else if (meta.action === 'collapse') {
+    } else if (meta.action === 'collapse') {
         meta.node.prefix = () =>
             h(NIcon, null, {
                 default: () => h(Folder)
@@ -119,8 +118,7 @@ function dfs(obj: any, path: string) {
                 }
             )
             item.children = dfs(obj[key], `${path}/${key}`)
-        }
-        else {
+        } else {
             item.prefix = () => h(
                 NIcon,
                 null,
@@ -180,7 +178,7 @@ function createFileOrFolder(type: 0 | 1) {
     <div
         m-2 mr-1 w-full flex flex-col rounded-2 bg-white pt-1 dark:bg-gray-800>
         <div flex-1 @click.right="showContextMenu($event)">
-            <div v-if="(!state.templateSetVisible && !state.templateChooseVisible) || state.templateSetReopen">
+            <div v-if="(!state.templateSetVisible && !state.templateSelectVisible) || state.templateSetReopen">
                 <n-scrollbar max-h-90vh>
                     <n-tree
                         draggable

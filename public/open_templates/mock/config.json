@@ -33,6 +33,11 @@
         }
     ],
     "variables": {
+        "__mock__total": {
+            "label": "条数",
+            "default": "1000",
+            "rule": "(rule, value) => { var r = /^\\+?[1-9][0-9]*$/; if (!r.test(value)) { return new Error('请填写正整数') } return  true }"
+        },
         "__mock__separator": {
             "label": "分隔符",
             "default": "|"
