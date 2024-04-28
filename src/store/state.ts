@@ -7,8 +7,9 @@ import JSZip from 'jszip'
 import { createDiscreteApi } from 'naive-ui'
 import MD5 from 'crypto-js/md5'
 import SHA256 from 'crypto-js/sha256'
-import Mock from 'better-mock'
 import { get } from '~/api/request'
+
+import { WorkerManager } from '~/worker/workerManager'
 
 if (import.meta.hot)
     import.meta.hot.accept()
@@ -168,47 +169,38 @@ export const useState = defineStore('state', {
             const fileStructureJson = render({ variables: this.variables })
             this.fileStructure = JSON.parse(fileStructureJson)
         },
-        async generate() {
-            console.time('time')
-            console.timeLog('time')
-            await this.loadFileStructure()
-            if (this.templateConfig!.mock) {
-                // eslint-disable-next-line no-eval
-                eval(`this.mock = {
-                  'list|${this.variables.__mock__total}': ${this.mockData!}
-                }`)
 
+        async generate() {
+            loadingBar.start()
+            await this.loadFileStructure()
+
+            let mockData = {}
+            const wm = WorkerManager.getInstance()
+
+            if (this.templateConfig!.mock) {
                 const extendTemplates: Record<string, any> = {}
                 for (let i = 0; i < this.fields.length; i++) {
                     const field = this.fields[i]
                     const key: any = field['__mock__dictName' as any]
                     const value: any = field['__mock__dictValue' as any]
-                    if (key) {
-                        extendTemplates[key] = function () {
-                            return this.pick(value.split(','))
-                        }
-                    }
+                    extendTemplates[key] = value
                 }
-                Mock.Random.extend(extendTemplates)
+
+                mockData = await wm.mock(
+                    this.mockData as string,
+                    this.variables.__mock__total,
+                    extendTemplates
+                )
             }
 
-            const mockData = Mock.mock(this.mock)
-            console.timeLog('time')
+            const promises = []
 
             for (let i = 0; i < this.templateConfig!.templates!.length; i++) {
                 const item = this.templateConfig!.templates![i]
                 // 模板内容渲染
                 const templateBlob = await this.get(item.from)
                 const templateRaw = await templateBlob.data.text()
-                const render = ejs.compile(templateRaw)
 
-                const renderData = render({
-                    variables: this.variables,
-                    fields: this.fields,
-                    data: mockData,
-                    _md5,
-                    _sha256
-                })
                 // 目标路径渲染
                 const renderPath = ejs.compile(item.to.toString())
                 const path = renderPath({ variables: this.variables }).split('/')
@@ -220,10 +212,22 @@ export const useState = defineStore('state', {
                 // 目标文件名渲染
                 const renderName = ejs.compile(item.name.toString())
                 const name = renderName({ variables: this.variables })
-                loc[name] = renderData
-                console.timeLog('time')
+
+                // 异步渲染模板
+                promises.push(
+                    wm.render(
+                        templateRaw,
+                        this.variables,
+                        this.fields,
+                        mockData
+                    ).then((renderData: any) => {
+                        loc[name] = renderData
+                    })
+                )
             }
-            console.timeEnd('time')
+
+            await Promise.all(promises)
+            loadingBar.finish()
             // 生成成功后保存本次参数
             this.saveToLocalStorage()
             this.storageKeys[latest_key_cn] = latest_key
