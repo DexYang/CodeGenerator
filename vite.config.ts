@@ -15,9 +15,25 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
     const root = process.cwd()
     const env = loadEnv(mode, root) as unknown as ImportMetaEnv
     return {
+        worker: {
+            format: 'es'
+        },
         resolve: {
             alias: {
                 '~/': `${path.resolve(__dirname, 'src')}/`
+            }
+        },
+        build: {
+            rollupOptions: {
+                output: {
+                    manualChunks: {
+                        'vue': ['vue', '@vueuse/core', 'vue-router'],
+                        'naive': ['naive-ui'],
+                        'generate': ['better-mock', 'ejs', 'file-saver', 'jszip'],
+                        'codemirror': ['codemirror', 'vue-codemirror'],
+                        '@codemirror': ['@codemirror/lang-java', '@codemirror/lang-javascript', '@codemirror/theme-one-dark']
+                    }
+                }
             }
         },
         base: env.VITE_BASE_URL,
