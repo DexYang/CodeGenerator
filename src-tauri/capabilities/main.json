@@ -1,0 +1,27 @@
+{
+    "$schema": "../gen/schemas/desktop-schema.json",
+    "identifier": "main-capability",
+    "description": "Capability for the main window",
+    "windows": ["main"],
+    "permissions": [
+        "fs:default",
+        {
+            "identifier": "fs:read-all",
+            "allow": [{ "path": "$RESOURCE" }, { "path": "**" }]
+        },
+        {
+            "identifier": "fs:write-all",
+            "allow": [{ "path": "$RESOURCE" }, { "path": "**" }]
+        },
+        {
+            "identifier": "fs:allow-exists",
+            "allow": [{ "path": "$RESOURCE" }, { "path": "**" }]
+        },
+        "window:default",
+        "window:allow-set-size",
+        "window:allow-set-resizable",
+        "webview:default",
+        "webview:allow-create-webview",
+        "webview:allow-create-webview-window"
+    ]
+}

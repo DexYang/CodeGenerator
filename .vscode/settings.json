@@ -1,6 +1,6 @@
 {
     "editor.indentSize": "tabSize",
-    "cSpell.words": ["Vitesse"],
+    "cSpell.words": ["Vitesse", "TAURI"],
     "files.associations": {
         "*.css": "postcss"
     },
