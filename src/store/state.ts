@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
-import { defineStore } from 'pinia'
 import { promiseTimeout, useStorage } from '@vueuse/core'
+import MD5 from 'crypto-js/md5'
+import SHA256 from 'crypto-js/sha256'
 import ejs from 'ejs'
 import FileSaver from 'file-saver'
 import JSZip from 'jszip'
 import { createDiscreteApi } from 'naive-ui'
-import MD5 from 'crypto-js/md5'
-import SHA256 from 'crypto-js/sha256'
+import { defineStore } from 'pinia'
 import { get } from '~/api/request'
 
 import { WorkerManager } from '~/worker/workerManager'
@@ -169,9 +169,20 @@ export const useState = defineStore('state', {
             const fileStructureJson = render({ variables: this.variables })
             this.fileStructure = JSON.parse(fileStructureJson)
         },
-
+        async setFields() {
+            for (const key in this.templateConfig!.fieldOptions!) {
+                const option = this.templateConfig!.fieldOptions![key]
+                if (option.type === 'function') {
+                    // eslint-disable-next-line no-eval
+                    const func = eval(option.function)
+                    await this.fields.map(async item => func(item))
+                }
+            }
+        },
         async generate() {
             loadingBar.start()
+            await this.setFields()
+
             await this.loadFileStructure()
 
             let mockData = {}
@@ -256,17 +267,7 @@ export const useState = defineStore('state', {
             const jsonString = localStorage.getItem(`${this.resourceConfig!.key}__${key || latest_key}`)
             return JSON.parse(jsonString!) as MutableData
         },
-        async setFields(fields: Array<Record<any, any>>, fieldOptions: Record<any, any>) {
-            for (const key in fieldOptions) {
-                const option = fieldOptions[key]
-                if (option.type === 'function') {
-                    // eslint-disable-next-line no-eval
-                    const func = eval(option.function)
-                    await fields.map(async item => func(item))
-                }
-            }
-            this.fields = fields
-        },
+
         deleteRow(row: any) {
             let index = 0
             for (let i = 0; i < this.fields.length; i++) {

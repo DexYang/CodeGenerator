@@ -1,15 +1,15 @@
 /// <reference types="vitest" />
 /* eslint-disable node/prefer-global/process */
-import path from 'node:path'
 import type { ConfigEnv, UserConfigExport } from 'vite'
-import { loadEnv } from 'vite'
+import path from 'node:path'
 import Vue from '@vitejs/plugin-vue'
-import Pages from 'vite-plugin-pages'
-import Components from 'unplugin-vue-components/vite'
-import AutoImport from 'unplugin-auto-import/vite'
 import UnoCSS from 'unocss/vite'
-import VueMacros from 'unplugin-vue-macros/vite'
+import AutoImport from 'unplugin-auto-import/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+import Components from 'unplugin-vue-components/vite'
+import VueMacros from 'unplugin-vue-macros/vite'
+import { loadEnv } from 'vite'
+import Pages from 'vite-plugin-pages'
 
 export default ({ mode }: ConfigEnv): UserConfigExport => {
     const root = process.cwd()

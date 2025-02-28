@@ -1,15 +1,14 @@
+import routes from 'virtual:generated-pages'
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import routes from 'virtual:generated-pages'
+import { pinia } from '~/store'
 import App from './App.vue'
 
-import { pinia } from '~/store'
-
-import 'uno.css'
+import 'virtual:uno.css'
 
 const app = createApp(App)
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHistory(),
     routes
 })
 app.use(router)

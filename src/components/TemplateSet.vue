@@ -100,13 +100,12 @@
 </template>
 
 <script lang="ts" setup>
-import { Add, Code } from '@vicons/ionicons5'
 import type { DataTableColumns, FormInst, SelectOption } from 'naive-ui'
-import { NButton, NInput, NSelect, NSwitch, useLoadingBar, useMessage } from 'naive-ui'
-
-import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
+import { Add, Code } from '@vicons/ionicons5'
+import { NButton, NInput, NSelect, NSwitch, useLoadingBar, useMessage } from 'naive-ui'
+import { Codemirror } from 'vue-codemirror'
 import { latest_key, useState } from '~/store/state'
 
 const formRef = ref<FormInst | null>(null)
